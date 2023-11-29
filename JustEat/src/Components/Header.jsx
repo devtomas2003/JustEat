@@ -2,7 +2,7 @@ export default function Header(){
     return (
         <div className="flex justify-between p-4 shadow">
             <div className="flex">
-                <h1 className="text-3xl font-bold text-zinc-800">JustEat</h1>
+                <img src="logo.svg" title="JustEat" alt="JustEat" className="w-36" />
                 <div className="flex items-center ml-8 space-x-6">
                     <a href="#" className="text-lg hover:underline text-zinc-800">Restaurantes</a>
                     <a href="#" className="text-lg hover:underline text-zinc-800">Estafetas</a>
