@@ -1,18 +1,27 @@
+import { Link } from "react-router-dom";
+import { GiHamburgerMenu } from "react-icons/gi";
+
 export default function Header(){
     return (
-        <div className="flex justify-between p-4 shadow">
-            <div className="flex">
-                <h1 className="text-3xl font-bold text-zinc-800">JustEat</h1>
-                <div className="flex items-center ml-8 space-x-6">
-                    <a href="#" className="text-lg hover:underline text-zinc-800">Restaurantes</a>
-                    <a href="#" className="text-lg hover:underline text-zinc-800">Estafetas</a>
-                    <a href="#" className="text-lg hover:underline text-zinc-800">Ajuda</a>
+        <div className="flex w-full justify-between">
+            <div className="flex items-center">
+                <div className="flex items-center lg:space-x-0 space-x-4">
+                    <div className="lg:hidden">
+                        <GiHamburgerMenu className="text-zinc-800 w-8 h-8" />
+                    </div>
+                    <img src="/logo.svg" title="JustEat" alt="JustEat" className="lg:w-52 w-32" />
                 </div>
+                <ul className="ml-24 space-x-8 text-lg font-poppins lg:flex hidden">
+                    <li><Link to="/" className="hover:underline font-poppins font-extralight">Home</Link></li>
+                    <li><Link to="/restaurants" className="hover:underline font-poppins font-extralight">Restaurants</Link></li>
+                    <li><Link to="/help" className="hover:underline font-poppins font-extralight">Help</Link></li>
+                    <li><Link to="/more" className="hover:underline font-poppins font-extralight">Know More</Link></li>
+                </ul>
             </div>
-            <div className="flex space-x-4">
-                <button className="border-2 rounded-md px-3 py-1 border-zinc-800 text-lg font-medium text-zinc-800 hover:bg-zinc-800 hover:text-white">Criar Conta</button>
-                <button className="border-2 rounded-md px-3 py-1 border-zinc-800 bg-zinc-800 text-lg text-white hover:bg-zinc-900 hover:border-zinc-900 font-medium">Iniciar Sessão</button>
+            <div className="lg:flex hidden items-center space-x-8">
+                <Link to="/" className="border-b-2 font-poppins font-bold border-[#8C52FF]">Sign In</Link>
+                <Link to="/" className="shadow p-3 font-poppins rounded-xl border font-bold text-[#8C52FF]">Create Account</Link>
             </div>
-        </div>  
+        </div>
     );
 }
