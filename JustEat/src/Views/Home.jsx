@@ -2,8 +2,16 @@ import { Link } from "react-router-dom";
 import { VscError } from "react-icons/vsc";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import Header from "../Components/Header";
+import { useState } from "react";
 
 export default function Home(){
+
+    const [fieldTypePassword, setFieldTypePassword] = useState('password');
+    
+    function tooglePasswordView(){
+        setFieldTypePassword((lastStatus) => { return lastStatus === "password" ? "text" : "password"; });
+    }
+    
     return (
         <div className="p-8 flex flex-col absolute w-full h-full">
             <Header />
@@ -24,9 +32,9 @@ export default function Home(){
                             </div>
                         </div>
                         <div className="lg:w-96 w-full bg-[#EEF2F6] rounded-lg flex items-center">
-                            <input type="password" placeholder="Password" autoCapitalize="off" autoComplete="off" autoCorrect="off" className="p-2 rounded-lg bg-[#EEF2F6] w-full outline-none" />
-                            <div className="mr-2 hover:cursor-pointer">
-                                <FaRegEye className="w-6 h-6 text-zinc-600" />
+                            <input type={fieldTypePassword} placeholder="Password" autoCapitalize="off" autoComplete="off" autoCorrect="off" className="p-2 rounded-lg bg-[#EEF2F6] w-full outline-none" />
+                            <div className="mr-2 hover:cursor-pointer" onClick={() => { tooglePasswordView(); }}>
+                                { fieldTypePassword === "password" ? <FaRegEye className="w-6 h-6 text-zinc-600" /> : <FaRegEyeSlash className="w-6 h-6 text-zinc-600" /> }
                             </div>
                         </div>
                         <Link to="/forgot-password" className="text-[#8C52FF] font-bold hover:underline">Recover Account</Link>
