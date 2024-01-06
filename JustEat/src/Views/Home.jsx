@@ -18,31 +18,31 @@ export default function Home(){
             <div className="h-full flex flex-col lg:flex-row justify-center items-center">
                 <div className="lg:w-1/2 w-full flex flex-col lg:items-center justify-center">
                     <div className="w-[28rem]">
-                        <h1 className="text-zinc-800 leading-[1.4] text-6xl font-bold">Log in to start ordering now!</h1>    
-                        <p className="mt-6 text-lg">Don't have an account yet?</p>
-                        <a href="#" className="font-bold text-[#8C52FF] text-lg">Create Account</a>
+                        <h1 className="text-zinc-800 leading-[1.4] text-6xl font-semibold font-poppins">Log in to start <label className="border-[#8C52FF] border-b-8">ordering</label> now!</h1>    
+                        <p className="mt-6 text-lg font-poppins font-extralight">Don't have an account yet?</p>
+                        <Link to="/signup" className="font-semibold font-poppins text-[#8C52FF] text-lg">Create Account</Link>
                     </div>
                 </div>
                 <div className="lg:w-1/2 w-full flex flex-col items-center justify-center mt-8 lg:mt-0">
                     <form className="w-full lg:w-auto flex flex-col space-y-4">
                         <div className="lg:w-96 w-full bg-[#EEF2F6] rounded-lg flex items-center">
-                            <input type="email" placeholder="Email" autoCapitalize="off" autoComplete="email" autoCorrect="off" className="p-2 rounded-lg bg-[#EEF2F6] w-full outline-none" />
+                            <input type="email" placeholder="Email" autoCapitalize="off" autoComplete="email" autoCorrect="off" className="font-poppins font-extralight p-2 rounded-lg bg-[#EEF2F6] w-full outline-none" />
                             <div className="mr-2">
                                 <VscError className="w-6 h-6 text-red-600" />
                             </div>
                         </div>
                         <div className="lg:w-96 w-full bg-[#EEF2F6] rounded-lg flex items-center">
-                            <input type={fieldTypePassword} placeholder="Password" autoCapitalize="off" autoComplete="off" autoCorrect="off" className="p-2 rounded-lg bg-[#EEF2F6] w-full outline-none" />
+                            <input type={fieldTypePassword} placeholder="Password" autoCapitalize="off" autoComplete="off" autoCorrect="off" className="font-poppins font-extralight p-2 rounded-lg bg-[#EEF2F6] w-full outline-none" />
                             <div className="mr-2 hover:cursor-pointer" onClick={() => { tooglePasswordView(); }}>
                                 { fieldTypePassword === "password" ? <FaRegEye className="w-6 h-6 text-zinc-600" /> : <FaRegEyeSlash className="w-6 h-6 text-zinc-600" /> }
                             </div>
                         </div>
-                        <Link to="/forgot-password" className="text-[#8C52FF] font-bold hover:underline">Recover Account</Link>
-                        <button className="bg-[#8C52FF] p-3 rounded-lg shadow-xl text-white font-bold">Sign In</button>
+                        <Link to="/forgot-password" className="text-[#8C52FF] font-bold hover:underline font-poppins">Recover Account</Link>
+                        <button className="bg-[#8C52FF] p-3 rounded-lg shadow-xl text-white font-semibold font-poppins">Sign In</button>
                     </form>
                     <div className="mt-4 flex items-center space-x-2">
                         <div className="h-[0.1rem] w-full bg-zinc-300" />
-                        <p className="text-zinc-400 w-80">Or sign in with</p>
+                        <p className="text-zinc-400 w-[21.5rem] font-poppins font-extralight">Or sign in with</p>
                         <div className="h-[0.1rem] w-full bg-zinc-300" />
                     </div>
                     <div className="lg:w-96 w-full mt-4 flex space-x-2">
