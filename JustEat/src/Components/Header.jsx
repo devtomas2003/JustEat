@@ -10,7 +10,7 @@ export default function Header(){
     return (
         <Fragment>
             { isMobileMenuOpen ?
-            <div className="w-1/2 h-full bg-zinc-200 border shadow fixed top-0 left-0 p-4 lg:hidden">
+            <div className="w-1/2 h-full bg-zinc-200 border shadow fixed top-0 left-0 p-4 lg:hidden z-10">
                 <div className="flex items-center justify-between">
                     <img src="/logo.svg" title="JustEat" alt="JustEat" className="w-32" />
                     <div className="hover:cursor-pointer" onClick={() => { setIsMobileMenuOpen(false); }}>
