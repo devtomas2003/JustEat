@@ -3,22 +3,26 @@ import { FaLocationDot, FaClock } from "react-icons/fa6";
 import { RxReader } from "react-icons/rx";
 import FoodCard from "../Components/FoodCard";
 import Footer from "../Components/Footer";
-import CardOverview from "../Components/CartOverview";
+import CartOverview from "../Components/CartOverview";
+import { useState } from "react";
 
 export default function Restaurant(){
+
+    const [showCart, setShowCart] = useState(false);
+
     return (
         <div className="absolute w-full h-full flex flex-col">
-            {/* <CardOverview /> */}
+            { showCart ? <CartOverview closeCart={setShowCart} /> : null }
             <div className="flex flex-col min-w-full min-h-full">
                 <div className="p-8 flex flex-col">
-                <Header />
+                <Header openCart={setShowCart} />
                 <div className="flex mt-8 space-x-4">
                     <div className="w-3/4 h-full">
                         <div className="bg-[url('https://www.restolacuisine.com/restaurants/restaurant-la-cuisine/website/images/Lacuisine_resto.jpg')] w-full h-full rounded-xl bg-no-repeat bg-cover bg-center"></div>
                     </div>
                     <div className="w-1/4 h-full">
                         <p className="text-2xl text-zinc-800 underline font-poppins">Our Location</p>
-                        <iframe className="w-full mt-4 h-72" src="https://maps.google.com/maps?q=pingo%20doce%20oliveira%20de%20frades&amp;t=&amp;z=17&amp;ie=UTF8&amp;iwloc=&amp;output=embed" />
+                        <iframe className="w-full mt-4 h-72" src="https://maps.google.com/maps?q=ACERT%20Tondela&amp;t=&amp;z=17&amp;ie=UTF8&amp;iwloc=&amp;output=embed" />
                     </div>
                 </div>
                 <h1 className="font-poppins font-semibold text-2xl text-zinc-800 mt-2">Restaurante Teste</h1>

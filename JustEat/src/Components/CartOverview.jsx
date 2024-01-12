@@ -1,13 +1,24 @@
-export default function CardOverview(){
+import { IoCloseSharp } from "react-icons/io5";
+import CartItem from "./CartItem";
+
+export default function CartOverview(props){
     return (
-        <div className="w-1/4 fixed right-0 h-screen z-10 bg-white shadow p-6">
-            <h1 className="font-poppins text-2xl text-[#8C52FF] font-semibold">Cart</h1>
-            <p className="font-poppins text-zinc-800">See your card bellow</p>
-            <div className="mt-2">
-                <div className="flex flex-col space-y-2 shadow p-4 border rounded">
-                    <img src="https://www.foodandwine.com/thmb/Wd4lBRZz3X_8qBr69UOu2m7I2iw=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/classic-cheese-pizza-FT-RECIPE0422-31a2c938fc2546c9a07b7011658cfd05.jpg" className="w-full h-24 object-cover" title="Prato Nome" alt="Prato Nome" />
-                    <p>Um Produto Teste</p>
+        <div className="w-1/4 fixed right-0 h-full z-10 bg-white shadow flex flex-col">
+            <div className="px-6 pt-6 flex items-center justify-between">
+                <div>
+                    <h1 className="font-poppins text-2xl text-[#8C52FF] font-semibold">Cart</h1>
+                    <p className="font-poppins text-zinc-800">See your cart bellow</p>
                 </div>
+                <div className="hover:cursor-pointer" onClick={() => { props.closeCart(false); }}>
+                    <IoCloseSharp className="w-10 h-10 text-zinc-800" />
+                </div>
+            </div>
+            <div className="flex space-y-10 flex-col overflow-x-auto h-full p-6 mt-4">
+                <CartItem />
+                <CartItem />
+            </div>
+            <div className="p-6">
+                <button title="Bring Me My Food" className="bg-[#8C52FF] hover:bg-[#7e48e8] rounded hover:cursor-pointer  p-3 text-white w-full font-poppins font-normal">Bring Me My Food</button>
             </div>
         </div>
     );

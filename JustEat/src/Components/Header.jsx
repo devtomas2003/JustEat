@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
+import { FaCartShopping } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { Fragment, useState } from "react";
 
-export default function Header(){
+export default function Header(props){
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -44,6 +45,10 @@ export default function Header(){
                     </ul>
                 </div>
                 <div className="lg:flex hidden font-poppins items-center space-x-8">
+                    <div className="flex bg-slate-100 hover:bg-slate-200 hover:cursor-pointer p-2 items-center space-x-2 rounded" onClick={() => { props.openCart(true); }}>
+                        <FaCartShopping className="w-6 h-6 text-[#8C52FF]" />
+                        <p className="font-poppins text-[#8C52FF]">2 Itens</p>
+                    </div>
                     <Link to="/" className="border-b-2 font-bold border-[#8C52FF]">Sign In</Link>
                     <Link to="/signup" className="shadow p-3 rounded-xl border font-bold text-[#8C52FF]">Create Account</Link>
                 </div>
