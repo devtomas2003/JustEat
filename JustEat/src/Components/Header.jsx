@@ -20,10 +20,14 @@ export default function Header(props){
                 </div>
                 <ul className="mt-8 space-y-2 text-lg font-poppins flex flex-col font-extralight">
                     <li><Link to="/" className="hover:underline">Home</Link></li>
-                    <li><Link to="/restaurants" className="hover:underline">Restaurants</Link></li>
+                    <li><a href="#restaurants" className="hover:underline">Restaurants</a></li>
                     <li><Link to="/help" className="hover:underline">Help</Link></li>
                     <li><Link to="/more" className="hover:underline">Know More</Link></li>
                 </ul>
+                <div className="flex bg-slate-100 hover:bg-slate-200 hover:cursor-pointer p-2 items-center space-x-2 rounded w-fit mt-5" onClick={() => { props.openCart(true); }}>
+                    <FaCartShopping className="w-6 h-6 text-[#8C52FF]" />
+                    <p className="font-poppins text-[#8C52FF]">2 Itens</p>
+                </div>
                 <div className="flex flex-col font-poppins space-y-4 mt-8">
                     <Link to="/" className="border-b-2 font-bold border-[#8C52FF] w-fit">Sign In</Link>
                     <Link to="/signup" className="bg-white shadow p-3 rounded-xl border flex items-center justify-center font-bold text-[#8C52FF]">Create Account</Link>
@@ -39,7 +43,7 @@ export default function Header(props){
                     </div>
                     <ul className="ml-24 space-x-8 text-lg font-poppins lg:flex hidden font-extralight">
                         <li><Link to="/" className="hover:underline">Home</Link></li>
-                        <li><Link to="/restaurants" className="hover:underline">Restaurants</Link></li>
+                        <li><a href="#restaurants" className="hover:underline">Restaurants</a></li>
                         <li><Link to="/help" className="hover:underline">Help</Link></li>
                         <li><Link to="/more" className="hover:underline">Know More</Link></li>
                     </ul>
