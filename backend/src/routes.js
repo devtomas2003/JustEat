@@ -1,9 +1,12 @@
 import express from "express";
 
-import { GetRestaurants } from "./Controllers/Restaurants";
+import { BasicAuth, Auth } from "./Middlewares/Auth";
+
+import { AuthenticateUser, UserInfo } from "./Controllers/Users";
 
 const routes = express.Router();
 
-routes.get('/', GetRestaurants);
+routes.get('/login', BasicAuth, AuthenticateUser);
+routes.get('/user', Auth, UserInfo);
 
 export default routes;

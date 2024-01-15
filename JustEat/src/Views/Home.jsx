@@ -1,22 +1,60 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { VscError } from "react-icons/vsc";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import Header from "../Components/Header";
 import Restaurants from "../Components/Restaurants";
 import Footer from "../Components/Footer";
+import api from "../services/api";
+
+import { useUser } from "../Contexts/User";
+
+const submitLoginForm = z.object({
+    email: z.string().email('The email is required!'),
+    password: z.string().min(8, 'Password must be at least 8 characters!')
+});
 
 export default function Home(){
-
+    const navigate = useNavigate();
+    const { user } = useUser();
+    
     const [fieldTypePassword, setFieldTypePassword] = useState('password');
     
     function tooglePasswordView(){
         setFieldTypePassword((lastStatus) => { return lastStatus === "password" ? "text" : "password"; });
     }
+
+    const { register, handleSubmit, formState: { errors }, reset, setError } = useForm({
+        resolver: zodResolver(submitLoginForm),
+        mode: 'onChange'
+    });
+
+    function submitLogin(formData){
+        reset();
+        
+        api.get("/login", {
+            auth: {
+                username: formData.email,
+                password: formData.password
+            }
+        }).then((userAuth) => {
+            localStorage.setItem("@justeat/auth", userAuth.data.token);
+        }).catch((err) => {
+            console.log(err);
+            const errData = err.response.data;
+            setError(errData.field, {
+                message: errData.message
+            });
+        })
+    }
     
     return (
         <div className="flex flex-col absolute w-full h-full">
+            { Object.keys(user).length === 0 ? <>
             <div className="p-8 flex flex-col min-w-full min-h-full lg:bg-[url('/dish.svg')] bg-contain bg-no-repeat bg-center">
                 <Header />
                 <div className="h-full flex flex-col lg:flex-row justify-center items-center">
@@ -28,21 +66,37 @@ export default function Home(){
                         </div>
                     </div>
                     <div className="lg:w-1/2 w-full flex flex-col items-center justify-center mt-8 lg:mt-0">
-                        <form className="w-full lg:w-auto flex flex-col space-y-4">
+                        <form className="w-full lg:w-auto flex flex-col space-y-4" onSubmit={handleSubmit(submitLogin)}>
                             <div className="lg:w-96 w-full bg-[#EEF2F6] rounded-lg flex items-center opacity-90">
-                                <input type="email" placeholder="Email" autoCapitalize="off" autoComplete="email" autoCorrect="off" className="font-poppins font-extralight p-2 rounded-lg bg-[#EEF2F6] w-full outline-none" />
-                                <div className="mr-2">
-                                    <VscError className="w-6 h-6 text-red-600" />
-                                </div>
+                                <input
+                                    type="email"
+                                    placeholder="Email"
+                                    autoCapitalize="off"
+                                    autoComplete="email"
+                                    autoCorrect="off"
+                                    className="font-poppins font-extralight p-2 rounded-lg bg-[#EEF2F6] w-full outline-none"
+                                    {...register('email')}
+                                />
+                                { errors.email && errors.email.message ? <div className="mr-2">
+                                    <VscError className="w-6 h-6 text-red-600" title={errors.email.message} />
+                                </div> : null }
                             </div>
                             <div className="lg:w-96 w-full bg-[#EEF2F6] rounded-lg flex items-center opacity-90">
-                                <input type={fieldTypePassword} placeholder="Password" autoCapitalize="off" autoComplete="off" autoCorrect="off" className="font-poppins font-extralight p-2 rounded-lg bg-[#EEF2F6] w-full outline-none" />
+                                <input
+                                    type={fieldTypePassword}
+                                    placeholder="Password"
+                                    autoCapitalize="off"
+                                    autoComplete="off"
+                                    autoCorrect="off"
+                                    className="font-poppins font-extralight p-2 rounded-lg bg-[#EEF2F6] w-full outline-none"
+                                    {...register('password')}
+                                />
                                 <div className="mr-2 hover:cursor-pointer" onClick={() => { tooglePasswordView(); }}>
                                     { fieldTypePassword === "password" ? <FaRegEye className="w-6 h-6 text-zinc-600" /> : <FaRegEyeSlash className="w-6 h-6 text-zinc-600" /> }
                                 </div>
                             </div>
                             <Link to="/forgot-password" className="text-[#8C52FF] font-bold hover:underline font-poppins w-fit">Recover Account</Link>
-                            <button className="bg-[#8C52FF] p-3 rounded-lg shadow-xl text-white font-semibold font-poppins hover:bg-[#7e48e8]">Sign In</button>
+                            <button type="submit" className="bg-[#8C52FF] p-3 rounded-lg shadow-xl text-white font-semibold font-poppins hover:bg-[#7e48e8]">Sign In</button>
                         </form>
                         <div className="mt-4 flex items-center space-x-2">
                             <div className="h-[0.1rem] w-full bg-zinc-300" />
@@ -58,9 +112,16 @@ export default function Home(){
                             </button>
                         </div>
                     </div>
-                </div>
+                </div> 
             </div>
             <Restaurants />
+            </>
+            :
+            <>
+                <div className="p-8 flex flex-col"><Header /></div>
+                <div className="flex-1"><Restaurants /></div>
+            </>
+            }
             <Footer />
         </div>
     );
