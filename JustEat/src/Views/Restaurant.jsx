@@ -4,11 +4,16 @@ import { RxReader } from "react-icons/rx";
 import FoodCard from "../Components/FoodCard";
 import Footer from "../Components/Footer";
 import CartOverview from "../Components/CartOverview";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useUser } from "../Contexts/User";
 
 export default function Restaurant(){
-
     const [showCart, setShowCart] = useState(false);
+    const { getUserInfo } = useUser();
+
+    useEffect(() => {
+        getUserInfo();
+    }, []);
 
     return (
         <div className="absolute w-full h-full flex flex-col">

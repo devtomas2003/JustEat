@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaCartShopping } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
 import { GiHamburgerMenu } from "react-icons/gi";
@@ -11,7 +11,7 @@ import { IMAGES_SERVER } from "../services/env";
 import { useUtils } from "../Contexts/Utils";
 
 export default function Header(props){
-
+    const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const { user, makeLogout } = useUser();
@@ -36,7 +36,7 @@ export default function Header(props){
             { isMobileMenuOpen ?
             <div className="w-1/2 h-full bg-zinc-200 border shadow fixed top-0 left-0 p-4 lg:hidden z-10">
                 <div className="flex items-center justify-between">
-                    <img src="/logo.svg" title="JustEat" alt="JustEat" className="w-32" />
+                    <img src="/logo.svg" title="JustEat" alt="JustEat" className="w-32" onClick={()=>{navigate('/')}}/>
                     <div className="hover:cursor-pointer" onClick={() => { setIsMobileMenuOpen(false); }}>
                         <IoMdClose className="w-8 h-8 text-zinc-700" />
                     </div>
@@ -62,26 +62,23 @@ export default function Header(props){
                         <div className="lg:hidden hover:cursor-pointer" onClick={() => { setIsMobileMenuOpen(true); }}>
                             <GiHamburgerMenu className="text-zinc-800 w-8 h-8" />
                         </div>
-                        <img src="/logo.svg" title="JustEat" alt="JustEat" className="lg:w-52 w-32" />
+                        <img src="/logo.svg" title="JustEat" alt="JustEat" className="lg:w-52 w-32" onClick={()=>{navigate('/')}}/>
                     </div>
                     <ul className="ml-24 space-x-8 text-lg font-poppins lg:flex hidden font-extralight">
                         { Object.keys(user).length > 0 ?
                         <>
                             { user.role === "user" ?
                             <>
-                                <li><Link to="/" className="hover:underline">Home</Link></li>
                                 <li><a href="#restaurants" className="hover:underline">Restaurants</a></li>
                                 <li><Link to="/orders" className="hover:underline">My Orders</Link></li>
                                 <li><Link to="/more" className="hover:underline">Addresses</Link></li>
                             </> : user.role === "manager" ?
                             <>
-                                <li><Link to="/" className="hover:underline">Home</Link></li>
                                 <li><a href="#restaurants" className="hover:underline">Restaurants</a></li>
                                 <li><Link to="/help" className="hover:underline">My Requests</Link></li>
                                 <li><Link to="/more" className="hover:underline">My Restaurant</Link></li>
                             </> : user.role === "admin" ?
                             <>
-                                <li><Link to="/" className="hover:underline">Home</Link></li>
                                 <li><a href="#restaurants" className="hover:underline">Restaurants</a></li>
                                 <li><Link to="/help" className="hover:underline">Requests</Link></li>
                             </> : null }

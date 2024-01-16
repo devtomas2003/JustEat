@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { VscError } from "react-icons/vsc";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import Header from "../Components/Header";
@@ -26,6 +26,7 @@ export default function SignUp(){
 
     const [fieldsTypePassword, setFieldsTypePassword] = useState({ "password": "password", "repassword": "password" });
     const { showNotification } = useUtils();
+    const navigate = useNavigate();
 
     const { register, handleSubmit, formState: { errors }, reset, setError } = useForm({
         resolver: zodResolver(submitRegisterForm),
@@ -46,6 +47,7 @@ export default function SignUp(){
         api.post('/createAccount', formData).then((resp) => {
             const respData = resp.data;
             showNotification(respData.message, respData.alertType);
+            navigate('/')
         }).catch((err) => {
             const respData = err.response.data;
             if(respData.field === "notification"){
