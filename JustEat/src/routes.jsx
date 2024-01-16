@@ -7,20 +7,26 @@ import ListRestaurants from "./Views/Admin/ListRestaurants";
 import RestaurantDetail from "./Views/Admin/RestaurantDetail";
 import Orders from "./Views/Admin/Orders";
 import { UserProvider } from "./Contexts/User";
+import { UtilsProvider } from "./Contexts/Utils";
+
+import Notification from "./Components/Notification";
 
 export default function Router(){
     return (
         <BrowserRouter>
-            <UserProvider>
-                <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/signup" element={<SignUp />} />
-                    <Route path="/restaurant/:slug" element={<Restaurant />} />
-                    <Route path="/admin/restaurants" element={<ListRestaurants />} />
-                    <Route path="/admin/restaurant/:slug" element={<RestaurantDetail />} />
-                    <Route path="/admin/orders" element={<Orders />} />
-                </Routes>
-            </UserProvider>
+            <UtilsProvider>
+                <UserProvider>
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/signup" element={<SignUp />} />
+                        <Route path="/restaurant/:slug" element={<Restaurant />} />
+                        <Route path="/admin/restaurants" element={<ListRestaurants />} />
+                        <Route path="/admin/restaurant/:slug" element={<RestaurantDetail />} />
+                        <Route path="/admin/orders" element={<Orders />} />
+                    </Routes>
+                    <Notification />
+                </UserProvider>
+            </UtilsProvider>
         </BrowserRouter>
     );
 }

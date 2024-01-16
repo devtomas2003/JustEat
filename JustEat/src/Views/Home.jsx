@@ -1,7 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { VscError } from "react-icons/vsc";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,6 +12,7 @@ import Footer from "../Components/Footer";
 import api from "../services/api";
 
 import { useUser } from "../Contexts/User";
+import { useUtils } from "../Contexts/Utils";
 
 const submitLoginForm = z.object({
     email: z.string().email('The email is required!'),
@@ -19,8 +20,8 @@ const submitLoginForm = z.object({
 });
 
 export default function Home(){
-    const navigate = useNavigate();
-    const { user } = useUser();
+    const { user, getUserInfo } = useUser();
+    const { showNotification } = useUtils();
     
     const [fieldTypePassword, setFieldTypePassword] = useState('password');
     
@@ -43,15 +44,23 @@ export default function Home(){
             }
         }).then((userAuth) => {
             localStorage.setItem("@justeat/auth", userAuth.data.token);
+            getUserInfo();
         }).catch((err) => {
-            console.log(err);
             const errData = err.response.data;
-            setError(errData.field, {
-                message: errData.message
-            });
+            if(errData.field === "notification"){
+                showNotification(errData.message, errData.alertType);
+            }else{
+                setError(errData.field, {
+                    message: errData.message
+                });
+            }
         })
     }
     
+    useEffect(() => {
+        getUserInfo();
+    }, []);
+
     return (
         <div className="flex flex-col absolute w-full h-full">
             { Object.keys(user).length === 0 ? <>
@@ -74,14 +83,14 @@ export default function Home(){
                                     autoCapitalize="off"
                                     autoComplete="email"
                                     autoCorrect="off"
-                                    className="font-poppins font-extralight p-2 rounded-lg bg-[#EEF2F6] w-full outline-none"
+                                    className="font-poppins font-extralight p-2 rounded-lg bg-[#EEF2F6] border border-[#EEF2F6] w-full outline-none"
                                     {...register('email')}
                                 />
                                 { errors.email && errors.email.message ? <div className="mr-2">
                                     <VscError className="w-6 h-6 text-red-600" title={errors.email.message} />
                                 </div> : null }
                             </div>
-                            <div className="lg:w-96 w-full bg-[#EEF2F6] rounded-lg flex items-center opacity-90">
+                            <div className={`lg:w-96 w-full bg-[#EEF2F6] rounded-lg flex items-center border opacity-90 ${ errors.password ? "border-red-600" : "border-[#EEF2F6]" }`}>
                                 <input
                                     type={fieldTypePassword}
                                     placeholder="Password"
@@ -89,6 +98,7 @@ export default function Home(){
                                     autoComplete="off"
                                     autoCorrect="off"
                                     className="font-poppins font-extralight p-2 rounded-lg bg-[#EEF2F6] w-full outline-none"
+                                    title={errors.password ? errors.password.message : null}
                                     {...register('password')}
                                 />
                                 <div className="mr-2 hover:cursor-pointer" onClick={() => { tooglePasswordView(); }}>

@@ -4,16 +4,57 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import Header from "../Components/Header";
 import { useState } from "react";
 import Footer from "../Components/Footer";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import api from "../services/api";
+import { useUtils } from "../Contexts/Utils";
+
+const submitRegisterForm = z.object({
+    name: z.string().min(3, 'The name needs to be at least 3 characters long!'),
+    email: z.string().email('The email is not valid!'),
+    phone: z.string().min(9, 'The phone number is not valid!'),
+    vat: z.string().min(9, 'The vat number is not valid!'),
+    password: z.string().min(8, 'The password needs to be at least 8 characters long!'),
+    repassword: z.string(),
+}).refine((data) => data.password === data.repassword, {
+    message: "Passwords don't match",
+    path: ["repassword"]
+  });
 
 export default function SignUp(){
 
     const [fieldsTypePassword, setFieldsTypePassword] = useState({ "password": "password", "repassword": "password" });
+    const { showNotification } = useUtils();
+
+    const { register, handleSubmit, formState: { errors }, reset, setError } = useForm({
+        resolver: zodResolver(submitRegisterForm),
+        mode: 'onChange'
+    });
     
     function tooglePasswordView(fieldName){
         setFieldsTypePassword((lastStatus) => {
             const updatedStatus = { ...lastStatus };
             updatedStatus[fieldName] = updatedStatus[fieldName] === "password" ? "text" : "password";
             return updatedStatus;
+        });
+    }
+
+    function createAccount(formData){
+        reset();
+
+        api.post('/createAccount', formData).then((resp) => {
+            const respData = resp.data;
+            showNotification(respData.message, respData.alertType);
+        }).catch((err) => {
+            const respData = err.response.data;
+            if(respData.field === "notification"){
+                showNotification(respData.message, respData.alertType);
+            }else{
+                setError(respData.field, {
+                    message: respData.message
+                });
+            }
         });
     }
     
@@ -30,38 +71,92 @@ export default function SignUp(){
                         </div>
                     </div>
                     <div className="lg:w-1/2 w-full flex flex-col items-center justify-center mt-8 lg:mt-0">
-                        <form className="w-full lg:w-auto flex flex-col space-y-4">
-                            <div className="lg:w-96 w-full bg-[#EEF2F6] rounded-lg flex items-center opacity-90">
-                                <input type="name" placeholder="Name" autoCapitalize="on" autoComplete="name" autoCorrect="on" className="font-poppins font-extralight p-2 rounded-lg bg-[#EEF2F6] w-full outline-none" />
-                                <div className="mr-2">
-                                    <VscError className="w-6 h-6 text-red-600" />
-                                </div>
+                        <form className="w-full lg:w-auto flex flex-col space-y-4" onSubmit={handleSubmit(createAccount)}>
+                            <div className={`lg:w-96 w-full bg-[#EEF2F6] rounded-lg flex items-center opacity-90 border ${ errors.name ? "border-red-600" : "border-[#EEF2F6]" }`}>
+                                <input
+                                    type="name"
+                                    placeholder="Name"
+                                    autoCapitalize="on"
+                                    autoComplete="name"
+                                    autoCorrect="on"
+                                    className="font-poppins font-extralight p-2 rounded-lg bg-[#EEF2F6] w-full outline-none"
+                                    {...register('name')}
+                                />
+                                { errors.name ? <div className="mr-2">
+                                    <VscError className="w-6 h-6 text-red-600" title={errors.name.message} />
+                                </div> : null }
                             </div>
-                            <div className="lg:w-96 w-full bg-[#EEF2F6] rounded-lg flex items-center opacity-90">
-                                <input type="email" placeholder="Email" autoCapitalize="off" autoComplete="email" autoCorrect="off" className="font-poppins font-extralight p-2 rounded-lg bg-[#EEF2F6] w-full outline-none" />
-                                <div className="mr-2">
-                                    <VscError className="w-6 h-6 text-red-600" />
-                                </div>
+                            <div className={`lg:w-96 w-full bg-[#EEF2F6] rounded-lg flex items-center opacity-90 border ${ errors.email ? "border-red-600" : "border-[#EEF2F6]" }`}>
+                                <input
+                                    type="email"
+                                    placeholder="Email"
+                                    autoCapitalize="off"
+                                    autoComplete="email"
+                                    autoCorrect="off"
+                                    className="font-poppins font-extralight p-2 rounded-lg bg-[#EEF2F6] w-full outline-none"
+                                    {...register('email')}
+                                />
+                                { errors.email ? <div className="mr-2">
+                                    <VscError className="w-6 h-6 text-red-600" title={errors.email.message} />
+                                </div> : null }
                             </div>
-                            <div className="lg:w-96 w-full bg-[#EEF2F6] rounded-lg flex items-center opacity-90">
-                                <input type="phone" placeholder="Phone Number" autoCapitalize="off" autoComplete="phone" autoCorrect="off" className="font-poppins font-extralight p-2 rounded-lg bg-[#EEF2F6] w-full outline-none" />
-                                <div className="mr-2">
-                                    <VscError className="w-6 h-6 text-red-600" />
-                                </div>
+                            <div className={`lg:w-96 w-full bg-[#EEF2F6] rounded-lg flex items-center opacity-90 border ${ errors.phone ? "border-red-600" : "border-[#EEF2F6]" }`}>
+                                <input
+                                    type="phone"
+                                    placeholder="Phone Number"
+                                    autoCapitalize="off"
+                                    autoComplete="phone"
+                                    autoCorrect="off"
+                                    className="font-poppins font-extralight p-2 rounded-lg bg-[#EEF2F6] w-full outline-none"
+                                    {...register('phone')}
+                                />
+                                { errors.phone ? <div className="mr-2">
+                                    <VscError className="w-6 h-6 text-red-600" title={errors.phone.message} />
+                                </div> : null }
                             </div>
-                            <div className="lg:w-96 w-full bg-[#EEF2F6] rounded-lg flex items-center opacity-90">
-                                <input type={fieldsTypePassword.password} placeholder="Password" autoCapitalize="off" autoComplete="off" autoCorrect="off" className="font-poppins font-extralight p-2 rounded-lg bg-[#EEF2F6] w-full outline-none" />
+                            <div className={`lg:w-96 w-full bg-[#EEF2F6] rounded-lg flex items-center opacity-90 border ${ errors.vat ? "border-red-600" : "border-[#EEF2F6]" }`}>
+                                <input
+                                    type="text"
+                                    placeholder="VAT"
+                                    autoCapitalize="off"
+                                    autoComplete="off"
+                                    autoCorrect="off"
+                                    className="font-poppins font-extralight p-2 rounded-lg bg-[#EEF2F6] w-full outline-none"
+                                    {...register('vat')}
+                                />
+                                { errors.vat ? <div className="mr-2">
+                                    <VscError className="w-6 h-6 text-red-600" title={errors.vat.message} />
+                                </div> : null }
+                            </div>
+                            <div title={errors.password ? errors.password.message : null} className={`lg:w-96 w-full bg-[#EEF2F6] rounded-lg flex items-center opacity-90 border ${ errors.password ? "border-red-600" : "border-[#EEF2F6]" }`}>
+                                <input
+                                    type={fieldsTypePassword.password}
+                                    placeholder="Password"
+                                    autoCapitalize="off"
+                                    autoComplete="off"
+                                    autoCorrect="off"
+                                    className="font-poppins font-extralight p-2 rounded-lg bg-[#EEF2F6] w-full outline-none"
+                                    {...register('password')}
+                                />
                                 <div className="mr-2 hover:cursor-pointer" onClick={() => { tooglePasswordView("password"); }}>
                                     { fieldsTypePassword.password === "password" ? <FaRegEye className="w-6 h-6 text-zinc-600" /> : <FaRegEyeSlash className="w-6 h-6 text-zinc-600" /> }
                                 </div>
                             </div>
-                            <div className="lg:w-96 w-full bg-[#EEF2F6] rounded-lg flex items-center opacity-90">
-                                <input type={fieldsTypePassword.repassword} placeholder="Repite Your Password" autoCapitalize="off" autoComplete="off" autoCorrect="off" className="font-poppins font-extralight p-2 rounded-lg bg-[#EEF2F6] w-full outline-none" />
+                            <div title={errors.repassword ? errors.repassword.message : null} className={`lg:w-96 w-full bg-[#EEF2F6] rounded-lg flex items-center opacity-90 border ${ errors.repassword ? "border-red-600" : "border-[#EEF2F6]" }`}>
+                                <input
+                                    type={fieldsTypePassword.repassword}
+                                    placeholder="Repite Your Password"
+                                    autoCapitalize="off"
+                                    autoComplete="off"
+                                    autoCorrect="off"
+                                    className="font-poppins font-extralight p-2 rounded-lg bg-[#EEF2F6] w-full outline-none"
+                                    {...register('repassword')}
+                                />
                                 <div className="mr-2 hover:cursor-pointer" onClick={() => { tooglePasswordView("repassword"); }}>
                                     { fieldsTypePassword.repassword === "password" ? <FaRegEye className="w-6 h-6 text-zinc-600" /> : <FaRegEyeSlash className="w-6 h-6 text-zinc-600" /> }
                                 </div>
                             </div>
-                            <button className="font-poppins font-semibold bg-[#8C52FF] p-3 rounded-lg shadow-xl text-white hover:bg-[#7e48e8]">Sign Up</button>
+                            <button type="submit" className="font-poppins font-semibold bg-[#8C52FF] p-3 rounded-lg shadow-xl text-white hover:bg-[#7e48e8]">Sign Up</button>
                         </form>
                         <div className="mt-4 flex items-center space-x-2">
                             <div className="h-[0.1rem] w-full bg-zinc-300" />

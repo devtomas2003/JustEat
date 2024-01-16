@@ -11,23 +11,34 @@ const UsersSchema = new Schema({
     },
     password: {
         type: 'string',
+        unique: true,
         required: [true, "Password is required!"]
     },
     email: {
         type: 'string',
+        unique: true,
         required: [true, "Email is required!"]
     },
     nif: {
-        type: 'string',
-        required: [true, "Email is required!"]
+        type: 'number',
+        unique: true,
+        required: [true, "Email is required!"],
+        maxlength: 9
     },
     phone: {
         type: 'number',
-        required: [true, "Phone is required!"]
+        unique: true,
+        required: [true, "Phone is required!"],
+        maxlength: 9
     },
     isActive: {
         type: 'boolean',
         default: false
+    },
+    role: {
+        type: 'string',
+        default: 'user',
+        enums: ['admin', 'manager', 'user']
     }
 },
     { timestamps: true }

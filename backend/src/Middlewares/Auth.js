@@ -8,7 +8,8 @@ export async function BasicAuth(req, res, next){
     if(!authHeader){
         return res.status(401).json({
             "message": "Auth Header is missing!",
-            "field": "email"
+            "field": "notification",
+            "alertType": 0
         });
     }
 
@@ -25,15 +26,17 @@ export async function BasicAuth(req, res, next){
 
     if(!user){
         return res.status(401).json({
-            "message": "User not found!",
-            "field": "email"
+            "message": "The user or password are incorrect!",
+            "field": "notification",
+            "alertType": 0
         });
     }
      
     if(!user.isActive){
         return res.status(401).json({
-            "message": "User not active!",
-            "field": "email"
+            "message": "User is not active!",
+            "field": "notification",
+            "alertType": 1
         });
     }
 
@@ -41,13 +44,13 @@ export async function BasicAuth(req, res, next){
 
     if(!validatePassword){
         return res.status(401).json({
-            "message": "User not found!",
-            "field": "email"
+            "message": "The user or password are incorrect!",
+            "field": "notification",
+            "alertType": 0
         });
     }
     
     req.userId = user._id;
-
     next();
 }
 
