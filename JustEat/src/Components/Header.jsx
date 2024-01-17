@@ -62,7 +62,7 @@ export default function Header(props){
                         <div className="lg:hidden hover:cursor-pointer" onClick={() => { setIsMobileMenuOpen(true); }}>
                             <GiHamburgerMenu className="text-zinc-800 w-8 h-8" />
                         </div>
-                        <img src="/logo.svg" title="JustEat" alt="JustEat" className="lg:w-52 w-32" onClick={()=>{navigate('/')}}/>
+                        <img src="/logo.svg" title="JustEat" alt="JustEat" className="lg:w-52 w-32" onClick={()=>{ navigate('/'); }}/>
                     </div>
                     <ul className="ml-24 space-x-8 text-lg font-poppins lg:flex hidden font-extralight">
                         { Object.keys(user).length > 0 ?
@@ -99,7 +99,7 @@ export default function Header(props){
                             <p className="font-poppins text-[#8C52FF]">2 Itens</p>
                         </div> : null }
                         <div className="flex items-center space-x-2 hover:cursor-pointer" onClick={() => { setShowProfileMenu(!showProfileMenu); }}>
-                            <img src={IMAGES_SERVER + "/images/" + user.photo} className="w-10" />
+                            <img src={IMAGES_SERVER + user.photo} className="w-10" />
                             <p>{getUserSmallName(user.nome)}</p>
                             <div className="flex flex-col relative items-end">
                                 <IoMdArrowDropdown className="w-8 h-8 text-zinc-700" />

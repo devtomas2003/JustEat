@@ -1,9 +1,9 @@
 import mongoose, { Schema } from "mongoose";
 
-const UsersSchema = new Schema({
-    nome: {
+const RestaurantsSchema = new Schema({
+    name: {
         type: 'string',
-        required: [true, "Nome is required!"]
+        required: [true, "Name is required!"]
     },
     photo: {
         type: 'string',
@@ -28,9 +28,9 @@ const UsersSchema = new Schema({
     },
     isActive: {
         type: 'boolean',
-        default: false
+        default: true
     },
-    obervations: {
+    observations: {
         type: 'string',
     },
     addressLineOne: {
@@ -42,11 +42,11 @@ const UsersSchema = new Schema({
         required: [true, "Address Line Two is required!"],
     },
     openingTime: {
-        type: 'string',
+        type: 'Date',
         required: [true, "Opening Time is required!"],
     },
     closedTime: {
-        type: 'string',
+        type: 'Date',
         required: [true, "Closed Time is required!"],
     },
     latitude: {
@@ -59,9 +59,13 @@ const UsersSchema = new Schema({
     },
     restDays: {
         type: [String]
+    },
+    stars: {
+        type: 'number',
+        default: 0
     }
 },
     { timestamps: true }
 );
 
-export default mongoose.model('Users', UsersSchema);
+export default mongoose.model('Restaurants', RestaurantsSchema);

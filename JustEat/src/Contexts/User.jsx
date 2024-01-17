@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 
@@ -16,7 +16,7 @@ export const UserProvider = ({ children }) => {
                 }
             }).then((userInfo) => {
                 setUserInfo(userInfo.data);
-            }).catch((err) => {
+            }).catch(() => {
                 localStorage.removeItem("@justeat/auth");
                 navigate("/");
             });

@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import Users from "../Models/Users";
 import bcrypt from "bcryptjs";
+import { validateEmail } from "../Utils/Functions";
 
 export function AuthenticateUser(req, res){
     const userId = req.userId;
@@ -27,14 +28,6 @@ export async function UserInfo(req, res){
 
     res.status(200).json(userInfo);
 }
-
-const validateEmail = (email) => {
-    return String(email)
-      .toLowerCase()
-      .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      );
-};
 
 export async function CreateAccount(req, res){
     const name = req.body.name;
