@@ -1,9 +1,31 @@
+import Food from "../Models/Food";
 import Restaurants from "../Models/Restaurants";
-import { validateEmail } from "../Utils/Functions";
+import { calcCrow, validateEmail } from "../Utils/Functions";
 
 export async function GetRestaurants(req, res){
-    const allActiveRestaurants = await Restaurants.find();
-    res.status(200).json(allActiveRestaurants);
+    const lat = req.query.lat;
+    const long = req.query.long;
+
+    if(!lat || !long){
+        return res.status(404).json({
+            "message": "Cannot find geo points in request"
+        });
+    }
+
+    const restaurantsNearBy = [];
+
+    const allActiveRestaurants = await Restaurants.find({
+        isActive: true
+    });
+    
+    allActiveRestaurants.forEach((restaurant) => {
+        const calDist = calcCrow(lat, long, restaurant.latitude, restaurant.longitude);
+        if(calDist <= 5){
+            restaurantsNearBy.push(restaurant);
+        }
+    });
+
+    res.status(200).json(restaurantsNearBy);
 }
 
 export async function CreateRestaurant(req, res){
@@ -94,26 +116,29 @@ export async function GetRestaurant(req, res) {
         });
     }
 
-    try {
-        const restaurant = await Restaurants.findById(slug, {
-            addressLineOne: true,
-            addressLineTwo: true,
-            openingTime: true,
-            closedTime: true,
-            email: true,
-            longitude: true,
-            latitude: true,
-            photo: true,
-            name: true,
-            observations: true,
-            stars: true,
-            phone: true,
-            restDays: true
-        });
-        res.status(200).json(restaurant);
-    }catch(e){
-        return res.status(404).json({
-            "message": "Restaurant not found!"
-        });
-    }
+    Restaurants.findById(slug, {
+        addressLineOne: true,
+        addressLineTwo: true,
+        openingTime: true,
+        closedTime: true,
+        email: true,
+        longitude: true,
+        latitude: true,
+        photo: true,
+        name: true,
+        observations: true,
+        stars: true,
+        phone: true,
+        restDays: true
+    }).then((restaurant) => {
+        Food.find({
+            restaurant: slug
+        }).then((foods) => {
+            res.status(200).json({
+                restaurant,
+                foods
+            });
+        })
+    });
+
 }

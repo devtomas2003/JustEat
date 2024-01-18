@@ -27,6 +27,12 @@ export default function RestaurantCard(props){
             return false;
         }
 
+        const nowDay = now.toLocaleDateString('en-EN', { weekday: 'long' })
+ 
+        if(listOfRestDays.includes(nowDay)){
+            return false;
+        }
+
         return true;
     }
 
