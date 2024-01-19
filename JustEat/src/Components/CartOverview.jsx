@@ -5,20 +5,46 @@ import api from "../services/api";
 
 export default function CartOverview(props){
     const [cartItems, setCartItems] = useState([]);
+    const [foodLoaded, setFoodLoaded] = useState([]);
+
+    async function loadItem(itemId){
+        try{
+            const food = (await api.get('/food/' + itemId)).data;
+            return food;
+        }catch(err){
+            console.log(err);
+        }
+    }
 
     useEffect(() => {
         async function getCartItems(){
             if(localStorage.getItem("@justeat/cart")){
                 const cart = JSON.parse(localStorage.getItem("@justeat/cart"));
-                cart.forEach((cartItem) => {
-                    api.get('/food/' + cartItem).then((food) => {
-                        setCartItems([...cartItems, food.data]);
-                    })
-                });
+                const updatedCart = await Promise.all(cart.map(async (cartLine) => {
+                    const lastModelFood = { ...cartLine };
+                    const findExistent = foodLoaded.find((alreadyExists) => { console.log(alreadyExists); console.log(cartLine); return (alreadyExists._id === cartLine.foodId); });
+                    console.log(findExistent);
+                    if(findExistent){
+                        lastModelFood.food = findExistent;
+                    }else{
+                        const checkFood = await loadItem(cartLine.foodId);
+                        lastModelFood.food = checkFood;
+                        setFoodLoaded([...foodLoaded, checkFood]);
+                    }
+                    return lastModelFood;
+                }));
+                setCartItems(updatedCart);
             }
         }
         getCartItems();
     }, []);
+
+    async function handleRemoveItem(renderId){
+        const lastCartData = JSON.parse(localStorage.getItem("@justeat/cart")) || [];
+        const allCarts = lastCartData.filter(item => item.renderId !== renderId);
+        localStorage.setItem("@justeat/cart", JSON.stringify(allCarts));
+        setCartItems(allCarts);
+    }
 
     return (
         <div className="w-1/4 fixed right-0 h-full z-10 bg-white shadow flex flex-col">
@@ -32,8 +58,8 @@ export default function CartOverview(props){
                 </div>
             </div>
             { cartItems.length > 0 ? <div className="flex space-y-10 flex-col overflow-x-auto h-full p-6 mt-4">
-                { cartItems.map((cartFood, i) => {
-                    return (<CartItem key={i} cartFood={cartFood} />);
+                { cartItems.map((cartFoodLine) => {
+                    return (<CartItem key={cartFoodLine.renderId} renderId={cartFoodLine.renderId} cartFood={cartFoodLine.food} handleRemoveItem={handleRemoveItem} />);
                 }) }
             </div> : null }
             <div className="p-6">

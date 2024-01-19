@@ -10,10 +10,16 @@ export default function FoodCard(props){
 
         if(cartList){
             const lastCartList = JSON.parse(cartList);
-            lastCartList.push(foodId);
+            lastCartList.push({
+                renderId: Math.random().toString(16).slice(2),
+                foodId
+            });
             localStorage.setItem("@justeat/cart", JSON.stringify(lastCartList));
         }else{
-            localStorage.setItem("@justeat/cart", JSON.stringify([foodId]));
+            localStorage.setItem("@justeat/cart", JSON.stringify([{
+                renderId: Math.random().toString(16).slice(2),
+                foodId
+            }]));
         }
         showNotification("Item added to your cart!", 2);
     }

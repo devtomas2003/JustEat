@@ -1,8 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { FaCartShopping } from "react-icons/fa6";
-import { IoMdClose } from "react-icons/io";
+import { IoMdClose, IoMdArrowDropdown, IoIosHome } from "react-icons/io";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { IoMdArrowDropdown } from "react-icons/io";
 import { MdAccountCircle } from "react-icons/md";
 import { PiSignOut } from "react-icons/pi";
 import { Fragment, useState } from "react";
@@ -29,6 +28,10 @@ export default function Header(props){
     function logout(){
         makeLogout();
         showNotification("Logout completed!", 2);
+    }
+
+    function countCartItems(){
+        return localStorage.getItem("@justeat/cart") ? JSON.parse(localStorage.getItem("@justeat/cart")).length : 0;
     }
 
     return (
@@ -96,17 +99,21 @@ export default function Header(props){
                     <>
                         { user.role === "user" ? <div className="flex bg-slate-100 hover:bg-slate-200 hover:cursor-pointer p-2 items-center space-x-2 rounded" onClick={() => { props.openCart(true); }}>
                             <FaCartShopping className="w-6 h-6 text-[#8C52FF]" />
-                            <p className="font-poppins text-[#8C52FF]">2 Itens</p>
+                            <p className="font-poppins text-[#8C52FF]">{countCartItems() + " " +  (countCartItems() === 1 ? "Item" : "Itens")}</p>
                         </div> : null }
                         <div className="flex items-center space-x-2 hover:cursor-pointer" onClick={() => { setShowProfileMenu(!showProfileMenu); }}>
                             <img src={IMAGES_SERVER + user.photo} className="w-10" />
                             <p>{getUserSmallName(user.nome)}</p>
                             <div className="flex flex-col relative items-end">
                                 <IoMdArrowDropdown className="w-8 h-8 text-zinc-700" />
-                                { showProfileMenu ? <div className="shadow fixed mt-10 space-y-1 border flex flex-col rounded">
+                                { showProfileMenu ? <div className="shadow absolute mt-10 space-y-1 border flex flex-col rounded w-48 bg-white">
                                     <button className="flex items-center space-x-1 p-2 hover:bg-slate-100">
                                         <MdAccountCircle className="w-6 h-6 text-zinc-700" />
                                         <p>Perfil</p>
+                                    </button>
+                                    <button className="flex items-center space-x-1 p-2 hover:bg-slate-100">
+                                        <IoIosHome className="w-6 h-6 text-zinc-700" />
+                                        <p>Endereços</p>
                                     </button>
                                     <button className="flex items-center space-x-1 p-2 hover:bg-slate-100" onClick={() => { logout(); }}>
                                         <PiSignOut className="w-6 h-6 text-zinc-700" />
