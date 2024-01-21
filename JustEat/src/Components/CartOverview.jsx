@@ -2,10 +2,11 @@ import { IoCloseSharp } from "react-icons/io5";
 import CartItem from "./CartItem";
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import { useUser } from "../Contexts/User";
 
 export default function CartOverview(props){
-    const [cartItems, setCartItems] = useState([]);
-    const [foodLoaded, setFoodLoaded] = useState([]);
+    const { setUserCart, userCart } = useUser();
+    const [localItemsUser, setLocalItemsUser] = useState([]);
 
     async function loadItem(itemId){
         try{
@@ -16,35 +17,33 @@ export default function CartOverview(props){
         }
     }
 
-    useEffect(() => {
-        async function getCartItems(){
-            if(localStorage.getItem("@justeat/cart")){
-                const cart = JSON.parse(localStorage.getItem("@justeat/cart"));
-                const updatedCart = await Promise.all(cart.map(async (cartLine) => {
-                    const lastModelFood = { ...cartLine };
-                    const findExistent = foodLoaded.find((alreadyExists) => { console.log(alreadyExists); console.log(cartLine); return (alreadyExists._id === cartLine.foodId); });
-                    console.log(findExistent);
-                    if(findExistent){
-                        lastModelFood.food = findExistent;
-                    }else{
-                        const checkFood = await loadItem(cartLine.foodId);
-                        lastModelFood.food = checkFood;
-                        setFoodLoaded([...foodLoaded, checkFood]);
-                    }
-                    return lastModelFood;
-                }));
-                setCartItems(updatedCart);
-            }
-        }
-        getCartItems();
-    }, []);
-
     async function handleRemoveItem(renderId){
-        const lastCartData = JSON.parse(localStorage.getItem("@justeat/cart")) || [];
-        const allCarts = lastCartData.filter(item => item.renderId !== renderId);
+        const allCarts = userCart.filter(item => item.renderId !== renderId);
         localStorage.setItem("@justeat/cart", JSON.stringify(allCarts));
-        setCartItems(allCarts);
+        setUserCart(allCarts);
     }
+
+    useEffect(() => {
+        async function loadCart() {
+            const localCache = [];
+        
+            for (const cartItem of userCart) {
+                const foodAlreadyExists = localCache.find((alreadyExists) => alreadyExists.foodId === cartItem.foodId);
+
+                if (foodAlreadyExists) {
+                    const updatedFood = { ...foodAlreadyExists, renderId: cartItem.renderId };
+                    localCache.push(updatedFood);
+                } else {
+                    const apiFood = await loadItem(cartItem.foodId);
+                    cartItem.food = apiFood;
+                    localCache.push(cartItem);
+                }
+            }
+
+            setLocalItemsUser(localCache);
+        }
+        loadCart();
+    }, [userCart]);
 
     return (
         <div className="w-1/4 fixed right-0 h-full z-10 bg-white shadow flex flex-col">
@@ -57,9 +56,9 @@ export default function CartOverview(props){
                     <IoCloseSharp className="w-10 h-10 text-zinc-800" />
                 </div>
             </div>
-            { cartItems.length > 0 ? <div className="flex space-y-10 flex-col overflow-x-auto h-full p-6 mt-4">
-                { cartItems.map((cartFoodLine) => {
-                    return (<CartItem key={cartFoodLine.renderId} renderId={cartFoodLine.renderId} cartFood={cartFoodLine.food} handleRemoveItem={handleRemoveItem} />);
+            { localItemsUser.length > 0 ? <div className="flex space-y-10 flex-col overflow-x-auto h-full p-6 mt-4">
+                { localItemsUser.map((cartFoodLine) => {
+                    return (<CartItem key={cartFoodLine.renderId} cartFood={cartFoodLine.food} handleRemoveItem={() => { handleRemoveItem(cartFoodLine.renderId); }} />);
                 }) }
             </div> : null }
             <div className="p-6">

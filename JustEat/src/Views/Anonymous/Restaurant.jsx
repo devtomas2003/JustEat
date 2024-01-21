@@ -1,14 +1,14 @@
-import Header from "../Components/Header";
+import Header from "../../Components/Header";
 import { FaLocationDot, FaClock } from "react-icons/fa6";
 import { RxReader } from "react-icons/rx";
-import FoodCard from "../Components/FoodCard";
-import Footer from "../Components/Footer";
-import CartOverview from "../Components/CartOverview";
+import FoodCard from "../../Components/FoodCard";
+import Footer from "../../Components/Footer";
+import CartOverview from "../../Components/CartOverview";
 import { useEffect, useState } from "react";
-import { useUser } from "../Contexts/User";
+import { useUser } from "../../Contexts/User";
 import { useParams } from "react-router-dom";
-import api from "../services/api";
-import { IMAGES_SERVER } from "../services/env";
+import api from "../../services/api";
+import { IMAGES_SERVER } from "../../services/env";
 
 export default function Restaurant(){
     const [showCart, setShowCart] = useState(false);

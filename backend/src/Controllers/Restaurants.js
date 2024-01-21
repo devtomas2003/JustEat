@@ -1,5 +1,6 @@
 import Food from "../Models/Food";
 import Restaurants from "../Models/Restaurants";
+import Users from "../Models/Users";
 import { calcCrow, validateEmail } from "../Utils/Functions";
 
 export async function GetRestaurants(req, res){
@@ -20,7 +21,7 @@ export async function GetRestaurants(req, res){
     
     allActiveRestaurants.forEach((restaurant) => {
         const calDist = calcCrow(lat, long, restaurant.latitude, restaurant.longitude);
-        if(calDist <= 5){
+        if(calDist <= 25){
             restaurantsNearBy.push(restaurant);
         }
     });
@@ -141,4 +142,36 @@ export async function GetRestaurant(req, res) {
         })
     });
 
+}
+
+export async function GetMyRestaurant(req, res){
+    const userId = req.userId;
+
+    const userRestaurant = await Users.findById(userId, {
+        entityConnected: true
+    });
+
+    if(!userRestaurant.entityConnected){
+        return res.status(400).json({
+            "message": "The user is not connected to a restaurant!"
+        });
+    }
+    
+    const restaurant = await Restaurants.findById(userRestaurant.entityConnected, {
+        name: true,
+        vat: true,
+        openingTime: true,
+        closedTime: true,
+        addressLineOne: true,
+        addressLineTwo: true,
+        latitude: true,
+        longitude: true,
+        restDays: true,
+        observations: true,
+        phone: true,
+        email: true,
+        photo: true
+    });
+
+    res.status(200).json(restaurant);
 }

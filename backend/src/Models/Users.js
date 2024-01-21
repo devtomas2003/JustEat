@@ -39,6 +39,10 @@ const UsersSchema = new Schema({
         type: 'string',
         default: 'user',
         enums: ['admin', 'manager', 'user']
+    },
+    entityConnected: {
+        type: 'string',
+        ref: "Restaurants"
     }
 },
     { timestamps: true }

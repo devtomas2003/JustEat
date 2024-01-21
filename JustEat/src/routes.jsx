@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Home from "./Views/Home";
-import SignUp from "./Views/SignUp";
-import Restaurant from "./Views/Restaurant";
+import Home from "./Views/Anonymous/Home";
+import SignUp from "./Views/Anonymous/SignUp";
+import Restaurant from "./Views/Anonymous/Restaurant";
 import ListRestaurants from "./Views/Admin/ListRestaurants";
-import RestaurantDetail from "./Views/Admin/RestaurantDetail";
+import RestaurantDetail from "./Components/RestaurantDetail";
 import Orders from "./Views/Admin/Orders";
 import { UserProvider } from "./Contexts/User";
 import { UtilsProvider } from "./Contexts/Utils";
@@ -23,6 +23,7 @@ export default function Router(){
                         <Route path="/admin/restaurants" element={<ListRestaurants />} />
                         <Route path="/admin/restaurant/:slug" element={<RestaurantDetail />} />
                         <Route path="/admin/orders" element={<Orders />} />
+                        <Route path="/restaurant/overview" element={<RestaurantDetail />} />
                     </Routes>
                     <Notification />
                 </UserProvider>

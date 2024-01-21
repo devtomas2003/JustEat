@@ -22,7 +22,7 @@ const FoodsSchema = new Schema({
     },
     restaurant: {
         type: 'string',
-        ref: "Place"
+        ref: "Restaurants"
     }
 },
     { timestamps: true }

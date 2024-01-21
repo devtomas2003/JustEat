@@ -1,14 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
 import { VscError } from "react-icons/vsc";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import Header from "../Components/Header";
+import Header from "../../Components/Header";
 import { useState } from "react";
-import Footer from "../Components/Footer";
+import Footer from "../../Components/Footer";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import api from "../services/api";
-import { useUtils } from "../Contexts/Utils";
+import api from "../../services/api";
+import { useUtils } from "../../Contexts/Utils";
 
 const submitRegisterForm = z.object({
     name: z.string().min(3, 'The name needs to be at least 3 characters long!'),
@@ -20,7 +20,7 @@ const submitRegisterForm = z.object({
 }).refine((data) => data.password === data.repassword, {
     message: "Passwords don't match",
     path: ["repassword"]
-  });
+});
 
 export default function SignUp(){
 

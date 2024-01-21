@@ -13,7 +13,7 @@ export default function Header(props){
     const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [showProfileMenu, setShowProfileMenu] = useState(false);
-    const { user, makeLogout } = useUser();
+    const { user, makeLogout, userCart } = useUser();
     const { showNotification } = useUtils();
 
     function getUserSmallName(fullName){
@@ -28,10 +28,6 @@ export default function Header(props){
     function logout(){
         makeLogout();
         showNotification("Logout completed!", 2);
-    }
-
-    function countCartItems(){
-        return localStorage.getItem("@justeat/cart") ? JSON.parse(localStorage.getItem("@justeat/cart")).length : 0;
     }
 
     return (
@@ -79,7 +75,7 @@ export default function Header(props){
                             <>
                                 <li><a href="#restaurants" className="hover:underline">Restaurants</a></li>
                                 <li><Link to="/help" className="hover:underline">My Requests</Link></li>
-                                <li><Link to="/more" className="hover:underline">My Restaurant</Link></li>
+                                <li><Link to="/restaurant/overview" className="hover:underline">My Restaurant</Link></li>
                             </> : user.role === "admin" ?
                             <>
                                 <li><a href="#restaurants" className="hover:underline">Restaurants</a></li>
@@ -99,7 +95,7 @@ export default function Header(props){
                     <>
                         { user.role === "user" ? <div className="flex bg-slate-100 hover:bg-slate-200 hover:cursor-pointer p-2 items-center space-x-2 rounded" onClick={() => { props.openCart(true); }}>
                             <FaCartShopping className="w-6 h-6 text-[#8C52FF]" />
-                            <p className="font-poppins text-[#8C52FF]">{countCartItems() + " " +  (countCartItems() === 1 ? "Item" : "Itens")}</p>
+                            <p className="font-poppins text-[#8C52FF]">{userCart.length + " " +  (userCart.length === 1 ? "Item" : "Itens")}</p>
                         </div> : null }
                         <div className="flex items-center space-x-2 hover:cursor-pointer" onClick={() => { setShowProfileMenu(!showProfileMenu); }}>
                             <img src={IMAGES_SERVER + user.photo} className="w-10" />

@@ -6,13 +6,13 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import Header from "../Components/Header";
-import Restaurants from "../Components/Restaurants";
-import Footer from "../Components/Footer";
-import api from "../services/api";
+import Header from "../../Components/Header";
+import Restaurants from "../../Components/Restaurants";
+import Footer from "../../Components/Footer";
+import api from "../../services/api";
 
-import { useUser } from "../Contexts/User";
-import { useUtils } from "../Contexts/Utils";
+import { useUser } from "../../Contexts/User";
+import { useUtils } from "../../Contexts/Utils";
 
 const submitLoginForm = z.object({
     email: z.string().email('The email is required!'),

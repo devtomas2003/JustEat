@@ -6,6 +6,7 @@ const UsersContext = createContext({});
 
 export const UserProvider = ({ children }) => {
     const [user, setUserInfo] = useState({});
+    const [userCart, setUserCart] = useState(JSON.parse(localStorage.getItem('@justeat/cart')) || []);
     const navigate = useNavigate();
 
     async function getUserInfo(){
@@ -37,7 +38,9 @@ export const UserProvider = ({ children }) => {
         <UsersContext.Provider value={{
             user,
             getUserInfo,
-            makeLogout
+            makeLogout,
+            setUserCart,
+            userCart
         }}>
             { children }
         </UsersContext.Provider>
