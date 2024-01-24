@@ -17,8 +17,19 @@ export async function GetRestaurants(req, res){
 
     const allActiveRestaurants = await Restaurants.find({
         isActive: true
+    }, {
+        closedTime: true,
+        openingTime: true,
+        photo: true,
+        name: true,
+        restDays: true,
+        stars: true,
+        addressLineOne: true,
+        addressLineTwo: true,
+        latitude: true,
+        longitude: true
     });
-    
+
     allActiveRestaurants.forEach((restaurant) => {
         const calDist = calcCrow(lat, long, restaurant.latitude, restaurant.longitude);
         if(calDist <= 25){
@@ -29,6 +40,21 @@ export async function GetRestaurants(req, res){
     res.status(200).json(restaurantsNearBy);
 }
 
+
+export async function GetAllRestaurants(req, res){
+    const allRestaurants = await Restaurants.find({}, {
+        closedTime: true,
+        openingTime: true,
+        photo: true,
+        name: true,
+        restDays: true,
+        stars: true,
+        addressLineOne: true,
+        addressLineTwo: true,
+    });
+
+    res.status(200).json(allRestaurants);
+}
 export async function CreateRestaurant(req, res){
     const name = req.body.name;
     const photo = req.body.photo;
@@ -145,19 +171,28 @@ export async function GetRestaurant(req, res) {
 }
 
 export async function GetMyRestaurant(req, res){
-    const userId = req.userId;
+    let restaurantId;
 
-    const userRestaurant = await Users.findById(userId, {
-        entityConnected: true
-    });
+    if(req.query.editedEntity){
+        restaurantId = req.query.editedEntity;
+    }else{
+        const userId = req.userId;
 
-    if(!userRestaurant.entityConnected){
-        return res.status(400).json({
-            "message": "The user is not connected to a restaurant!"
+        const userRestaurant = await Users.findById(userId, {
+            entityConnected: true
         });
-    }
     
-    const restaurant = await Restaurants.findById(userRestaurant.entityConnected, {
+        if(!userRestaurant.entityConnected){
+            return res.status(400).json({
+                "message": "The user is not connected to a restaurant!"
+            });
+        }
+
+        restaurantId = userRestaurant.entityConnected;
+    }
+
+    
+    const restaurant = await Restaurants.findById(restaurantId, {
         name: true,
         vat: true,
         openingTime: true,
@@ -174,4 +209,93 @@ export async function GetMyRestaurant(req, res){
     });
 
     res.status(200).json(restaurant);
+}
+
+export async function UpdateRestaurant(req, res){
+    let restaurantId = req.params.restaurantId;
+
+    if(restaurantId === "own"){
+        const userRestaurant = await Users.findById(req.userId);
+        restaurantId = userRestaurant.entityConnected;
+    }
+
+    const name = req.body.name;
+    const email = req.body.email;
+    const vat = req.body.vat;
+    const phone = req.body.phone;
+    const observations = req.body.observations;
+    const addressLineOne = req.body.addressLineOne;
+    const addressLineTwo = req.body.addressLineTwo;
+    const openingTime = req.body.openingTime;
+    const closedTime = req.body.closedTime;
+    const latitude = req.body.latitude;
+    const restDays = req.body.restDays;
+    const longitude = req.body.longitude;
+
+    if(!restaurantId || !name || !email || !vat || !phone || !addressLineOne || !addressLineTwo || !openingTime || !closedTime || !latitude || !restDays || !longitude){
+        return res.status(400).json({
+            "message": "Missing fields! See API documentation",
+            "code": 0
+        });
+    }
+
+    if(!validateEmail(email)){
+        return res.status(400).json({
+            "message": "The email address is invalid!",
+            "code": 1
+        });
+    }
+
+    if(vat.toString().length !== 9){
+        return res.status(400).json({
+            "message": "The VAT is invalid!",
+            "code": 1
+        });
+    }
+
+    if(phone.toString().length !== 9){
+        return res.status(400).json({
+            "message": "The Phone Number is invalid!",
+            "code": 1
+        });
+    }
+
+    const openingTimeList = openingTime.split(":");
+    const closedTimeList = closedTime.split(":");
+
+    const openingTimeDate = new Date();
+    openingTimeDate.setHours(openingTimeList[0]);
+    openingTimeDate.setMinutes(openingTimeList[1]);
+    openingTimeDate.setSeconds(0);
+
+    const closingTimeDate = new Date();
+    closingTimeDate.setHours(closedTimeList[0]);
+    closingTimeDate.setMinutes(closedTimeList[1]);
+    closingTimeDate.setSeconds(0);
+
+    if(openingTimeDate >= closingTimeDate){
+        return res.status(400).json({
+            "message": "The opening time cannot be greater than the closing time",
+            "code": 1
+        });
+    }
+
+    await Restaurants.updateOne({ _id: restaurantId }, {
+        name,
+        email,
+        vat,
+        phone,
+        observations: observations || 'N/A',
+        addressLineOne,
+        addressLineTwo,
+        openingTime: openingTimeDate,
+        closedTime: closingTimeDate,
+        latitude,
+        longitude,
+        restDays
+    });
+
+    res.status(200).json({
+        "message": "Restaurant updated successfully!"
+    });
 }

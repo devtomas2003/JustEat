@@ -9,6 +9,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import api from "../services/api";
 import { useUser } from "../Contexts/User";
 import { IMAGES_SERVER } from "../services/env";
+import { useUtils } from "../Contexts/Utils";
+import { useParams } from "react-router-dom";
 
 const submitRestaurantForm = z.object({
     name: z.string().min(1, 'The name is required!'),
@@ -19,57 +21,125 @@ const submitRestaurantForm = z.object({
     addressLineTwo: z.string().min(1, 'The Address Line Two is required!'),
     latitude: z.string().min(5, 'The Latitude is required!'),
     longitude: z.string().min(1, 'The Longitude is required!'),
+    email: z.string().email('The email address is not valid!'),
+    phone: z.number().min(9, 'The Phone Number is required!'),
     description: z.string().min(10, 'A small description is required!')
 });
 
-export default function RestaurantDetail(props){
+export default function RestaurantDetail(){
 
     const { getUserInfo } = useUser();
-    const [restaurantMetadata, setRestaurantMetadata] = useState({});
+    const { showNotification } = useUtils();
+    let { slug } = useParams();
 
-    const { register, handleSubmit, formState: { errors }, reset, setError, setValue } = useForm({
+    const [restaurantMetadata, setRestaurantMetadata] = useState({});
+    const [selectedRestDays, setSelectedRestDays] = useState([]);
+
+    const { register, handleSubmit, formState: { errors }, setError, setValue } = useForm({
         resolver: zodResolver(submitRestaurantForm),
         mode: 'onChange'
     });
 
     function submitRestaurant(restaurantData){
-        reset();
+        if(selectedRestDays.length === 7){
+            showNotification("The Restaurant need to be opened at least 1 day!", 1);
+        }else{
+            if(slug){
+                api.put('/updateRestaurant/' + slug, {
+                    name: restaurantData.name,
+                    email: restaurantData.email,
+                    vat: restaurantData.vat,
+                    phone: restaurantData.phone,
+                    observations: restaurantData.description,
+                    addressLineOne: restaurantData.addressLineOne,
+                    addressLineTwo: restaurantData.addressLineTwo,
+                    openingTime: restaurantData.openTime,
+                    closedTime: restaurantData.closeTime,
+                    latitude: restaurantData.latitude,
+                    restDays: selectedRestDays,
+                    longitude: restaurantData.longitude
+                }).then((restResponse) => {
+                    showNotification(restResponse.data.message, 2);
+                }).catch((errorResp) => {
+                    showNotification(errorResp.response.data.message, errorResp.response.data.code);
+                })
+            }else{
+                api.put('/updateRestaurant/own', {
+                    name: restaurantData.name,
+                    email: restaurantData.email,
+                    vat: restaurantData.vat,
+                    phone: restaurantData.phone,
+                    observations: restaurantData.description,
+                    addressLineOne: restaurantData.addressLineOne,
+                    addressLineTwo: restaurantData.addressLineTwo,
+                    openingTime: restaurantData.openTime,
+                    closedTime: restaurantData.closeTime,
+                    latitude: restaurantData.latitude,
+                    restDays: selectedRestDays,
+                    longitude: restaurantData.longitude
+                }).then((restResponse) => {
+                    showNotification(restResponse.data.message, 2);
+                }).catch((errorResp) => {
+                    showNotification(errorResp.response.data.message, errorResp.response.data.code);
+                })
+            }
+        }
     }
 
     useEffect(() => {
         getUserInfo();
 
         async function loadRestaurant(){
-            if(props.restaurantId){
-
+            if(slug){
+                api.get('/restaurantOverview?editedEntity=' + slug).then((restaurantData) => {
+                    const restData = restaurantData.data;
+                    loadData(restData);
+                });
             }else{
                 api.get('/myRestaurant').then((restaurantData) => {
                     const restData = restaurantData.data;
-                    setValue('name', restData.name);
-                    setValue('vat', restData.vat.toString());
-                    setValue('addressLineOne', restData.addressLineOne);
-                    setValue('addressLineTwo', restData.addressLineTwo);
-                    setValue('latitude', restData.latitude);
-                    setValue('longitude', restData.longitude);
-                    setValue('description', restData.observations);
-                    setValue('openTime', new Date(restData.openingTime).getHours().toString().padStart(2, "0") + ":" + new Date(restData.openingTime).getMinutes().toString().padStart(2, "0"));
-                    setValue('closeTime', new Date(restData.closedTime).getHours().toString().padStart(2, "0") + ":" + new Date(restData.closedTime).getMinutes().toString().padStart(2, "0"));
-                    setRestaurantMetadata({
-                        'name': restData.name,
-                        'photo': restData.photo
-                    });
+                    loadData(restData);
                 });
             }
         }
         loadRestaurant();
     }, []);
 
+    function loadData(restData){
+        setValue('name', restData.name);
+        setValue('vat', restData.vat.toString());
+        setValue('addressLineOne', restData.addressLineOne);
+        setValue('addressLineTwo', restData.addressLineTwo);
+        setValue('phone', restData.phone);
+        setValue('email', restData.email);
+        setValue('latitude', restData.latitude);
+        setValue('longitude', restData.longitude);
+        setValue('description', restData.observations);
+        setValue('openTime', new Date(restData.openingTime).getHours().toString().padStart(2, "0") + ":" + new Date(restData.openingTime).getMinutes().toString().padStart(2, "0"));
+        setValue('closeTime', new Date(restData.closedTime).getHours().toString().padStart(2, "0") + ":" + new Date(restData.closedTime).getMinutes().toString().padStart(2, "0"));
+        setSelectedRestDays(restData.restDays);
+        setRestaurantMetadata({
+            'name': restData.name,
+            'photo': restData.photo
+        });
+    }
+
+    function updateRestaurantRestdays(selectedRestDays) {
+        setSelectedRestDays(() => {
+            const newSelectedRestDays = [];
+            for (let i = 0; i < selectedRestDays.target.selectedOptions.length; i++) {
+                newSelectedRestDays.push(selectedRestDays.target.selectedOptions[i].value);
+            }
+            return newSelectedRestDays;
+        });
+    }
+
     return (
         <div className="absolute w-full h-full flex flex-col">
             <div className="flex flex-col min-w-full min-h-full">
-                <div className="p-8">
+                <div className="p-8 h-full">
                     <Header />
-                    <div className="mt-4">
+                    <div className="mt-4 h-full">
                         <h1 className="text-zinc-800 font-poppins text-lg">Information Of {restaurantMetadata.name}</h1>
                         <form className="flex flex-col mt-4" onSubmit={handleSubmit(submitRestaurant)}>
                             <div className="flex justify-between lg:space-x-2 lg:space-y-0 space-y-2 flex-col lg:flex-row">
@@ -80,6 +150,13 @@ export default function RestaurantDetail(props){
                                             <input type="text" className="w-full bg-transparent outline-none" placeholder="A Nice Restaurant" {...register('name')} />
                                         </div>
                                         { errors.name ? <p className="text-red-600 font-poppins mt-0.5">{errors.name.message}</p> : null }
+                                    </div>
+                                    <div className="bg-slate-100 p-2 rounded">
+                                        <div className="flex space-x-2">
+                                            <label className="font-poppins text-zinc-700">Email</label>
+                                            <input type="text" className="w-full bg-transparent outline-none" placeholder="test@example-com" {...register('email')} />
+                                        </div>
+                                        { errors.email ? <p className="text-red-600 font-poppins mt-0.5">{errors.email.message}</p> : null }
                                     </div>
                                     <div className="bg-slate-100 p-2 rounded">
                                         <div className="flex space-x-2">
@@ -105,17 +182,16 @@ export default function RestaurantDetail(props){
                                     <div className="bg-slate-100 p-2 rounded">
                                         <div className="flex space-x-2">
                                             <label className="font-poppins w-36 text-zinc-700">Rest Days</label>
-                                            <select className="w-full bg-transparent outline-none" multiple>
-                                                <option>Monday</option>
-                                                <option>Tuesday</option>
-                                                <option>Wednesday</option>
-                                                <option>Thursday</option>
-                                                <option>Friday</option>
-                                                <option>Saturday</option>
-                                                <option>Sunday</option>
+                                            <select className="w-full bg-transparent outline-none" multiple onChange={updateRestaurantRestdays} value={selectedRestDays}>
+                                                <option value="Monday">Monday</option>
+                                                <option value="Tuesday">Tuesday</option>
+                                                <option value="Wednesday">Wednesday</option>
+                                                <option value="Thursday">Thursday</option>
+                                                <option value="Friday">Friday</option>
+                                                <option value="Saturday">Saturday</option>
+                                                <option value="Sunday">Sunday</option>
                                             </select>
                                         </div>
-                                        <p className="text-red-600 font-poppins mt-0.5">An Error!</p>
                                     </div>
                                 </div>
                                 <div className="w-full flex flex-col space-y-2">
@@ -125,6 +201,13 @@ export default function RestaurantDetail(props){
                                             <input type="text" className="w-full bg-transparent outline-none" placeholder="999999999" {...register('vat')} />
                                         </div>
                                         { errors.vat ? <p className="text-red-600 font-poppins mt-0.5">{errors.vat.message}</p> : null }
+                                    </div>
+                                    <div className="bg-slate-100 p-2 rounded">
+                                        <div className="flex space-x-2">
+                                            <label className="font-poppins w-36 text-zinc-700">Phone Number</label>
+                                            <input type="text" className="w-full bg-transparent outline-none" placeholder="985422489" {...register('phone')} />
+                                        </div>
+                                        { errors.phone ? <p className="text-red-600 font-poppins mt-0.5">{errors.phone.message}</p> : null }
                                     </div>
                                     <div className="bg-slate-100 p-2 rounded">
                                         <div className="flex space-x-2">
@@ -148,7 +231,7 @@ export default function RestaurantDetail(props){
                                         { errors.longitude ? <p className="text-red-600 font-poppins mt-0.5">{errors.longitude.message}</p> : null }
                                     </div>
                                     <div className="bg-slate-100 h-full p-2 flex flex-col rounded">
-                                        <div className="flex space-x-2">
+                                        <div className="flex space-x-2 h-full">
                                             <label className="w-36 font-poppins text-zinc-700">Description</label>
                                             <textarea type="text" className="w-full h-full bg-transparent outline-none" placeholder="We are a good restaurant!" {...register('description')} />
                                         </div>

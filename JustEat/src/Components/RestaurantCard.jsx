@@ -37,7 +37,7 @@ export default function RestaurantCard(props){
     }
 
     return (
-        <div className="w-full rounded-t-md border border-gray-300 shadow-lg hover:cursor-pointer group" onClick={() => { navigate("/restaurant/" + props.restaurant._id); }}>
+        <div className="w-full rounded-t-md border border-gray-300 shadow-lg hover:cursor-pointer group" onClick={() => { props.fromAdmin ? navigate("/admin/restaurant/" + props.restaurant._id) : navigate("/restaurant/" + props.restaurant._id) }}>
             <div className="overflow-hidden rounded-t-md">
                 <div className="w-full rounded-t-md h-24 flex items-center justify-center">
                     <img src={IMAGES_SERVER + props.restaurant.photo} className="scale-100 group-hover:scale-110 transition-all duration-500 ease-in-out object-cover" title={props.restaurant.name} alt={props.restaurant.name} />

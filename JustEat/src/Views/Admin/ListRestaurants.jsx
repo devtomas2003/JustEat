@@ -1,9 +1,25 @@
+import { useEffect, useState } from "react";
 import Header from "../../Components/Header";
 import RestaurantCard from "../../Components/RestaurantCard";
 
 import { IoIosAddCircle } from "react-icons/io";
+import api from "../../services/api";
+import { useUser } from "../../Contexts/User";
 
 export default function ListRestaurants(){
+    const { getUserInfo } = useUser();
+    const [allRestaurants, setAllRestaurants] = useState([]);
+
+    useEffect(() => {
+        getUserInfo();
+        function getAllRestaurants(){
+            api.get('/allRestaurants').then((restaurantsData) => {
+                setAllRestaurants(restaurantsData.data);
+            });
+        }
+        getAllRestaurants();
+    }, []);
+
     return (
         <div className="absolute w-full h-full flex flex-col">
             <div className="flex flex-col min-w-full min-h-full p-8">
@@ -16,13 +32,9 @@ export default function ListRestaurants(){
                         </div>
                     </div>
                     <div className="mt-4 grid lg:grid-cols-5 gap-4">
-                        <RestaurantCard />
-                        <RestaurantCard />
-                        <RestaurantCard />
-                        <RestaurantCard />
-                        <RestaurantCard />
-                        <RestaurantCard />
-                        <RestaurantCard />
+                        { allRestaurants.map((restaurant) => {
+                            return (<RestaurantCard key={restaurant._id} restaurant={restaurant} fromAdmin={true} />);
+                        }) }
                     </div>
                 </div>
             </div>

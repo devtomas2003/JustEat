@@ -8,7 +8,7 @@ export async function CreateFood(req, res){
     const restaurant = req.body.restaurant;
 
     if(!name || !price || !alergy || !description || !restaurant){
-        res.status(400).json({
+        return res.status(400).json({
             "message": "Missing fields! See API documentation"
         });
     }
@@ -16,7 +16,7 @@ export async function CreateFood(req, res){
     const priceValue = parseInt(price);
 
     if(isNaN(priceValue)){
-        res.status(400).json({
+        return res.status(400).json({
             "message": "Price must be a float"
         });
     }
@@ -39,7 +39,7 @@ export async function GetFood(req, res){
     const foodId = req.params.foodId;
 
     if(!foodId){
-        res.status(400).json({
+        return res.status(400).json({
             "message": "Missing field! See API documentation"
         });
     }

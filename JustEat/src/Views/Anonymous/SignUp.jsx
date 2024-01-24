@@ -2,13 +2,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { VscError } from "react-icons/vsc";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import Header from "../../Components/Header";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Footer from "../../Components/Footer";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import api from "../../services/api";
 import { useUtils } from "../../Contexts/Utils";
+import { useUser } from "../../Contexts/User";
 
 const submitRegisterForm = z.object({
     name: z.string().min(3, 'The name needs to be at least 3 characters long!'),
@@ -23,6 +24,11 @@ const submitRegisterForm = z.object({
 });
 
 export default function SignUp(){
+    const { getUserInfo } = useUser();
+
+    useEffect(() => {
+        getUserInfo();
+    }, []);
 
     const [fieldsTypePassword, setFieldsTypePassword] = useState({ "password": "password", "repassword": "password" });
     const { showNotification } = useUtils();
