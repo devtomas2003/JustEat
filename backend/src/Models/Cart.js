@@ -29,6 +29,10 @@ const Cart = new Schema({
         type: 'string',
         required: true,
         ref: 'Restaurants'
+    },
+    status: {
+        type: 'string',
+        default: 'PENDING'
     }
 },
     { timestamps: true }

@@ -1,15 +1,15 @@
-import Header from "../Components/Header";
+import Header from "../../Components/Header";
 import { FaRegSave } from "react-icons/fa";
 import { MdAddPhotoAlternate } from "react-icons/md";
-import Footer from "../Components/Footer";
+import Footer from "../../Components/Footer";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import api from "../services/api";
-import { useUser } from "../Contexts/User";
-import { IMAGES_SERVER } from "../services/env";
-import { useUtils } from "../Contexts/Utils";
+import api from "../../services/api";
+import { useUser } from "../../Contexts/User";
+import { IMAGES_SERVER } from "../../services/env";
+import { useUtils } from "../../Contexts/Utils";
 import { useParams } from "react-router-dom";
 
 const submitRestaurantForm = z.object({
@@ -64,7 +64,7 @@ export default function RestaurantDetail(){
                     showNotification(errorResp.response.data.message, errorResp.response.data.code);
                 })
             }else{
-                api.put('/updateRestaurant/own', {
+                api.post('/updateRestaurant/own', {
                     name: restaurantData.name,
                     email: restaurantData.email,
                     vat: restaurantData.vat,

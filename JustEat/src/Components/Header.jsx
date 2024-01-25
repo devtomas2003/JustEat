@@ -70,15 +70,15 @@ export default function Header(props){
                             <>
                                 <li><a href="#restaurants" className="hover:underline">Restaurants</a></li>
                                 <li><Link to="/orders" className="hover:underline">My Orders</Link></li>
-                                <li><Link to="/more" className="hover:underline">Addresses</Link></li>
+                                <li><Link to="/addresses" className="hover:underline">Addresses</Link></li>
                             </> : user.role === "manager" ?
                             <>
-                                <li><Link to="/help" className="hover:underline">My Requests</Link></li>
+                                <li><Link to="/restaurant/orders" className="hover:underline">My Requests</Link></li>
                                 <li><Link to="/restaurant/overview" className="hover:underline">My Restaurant</Link></li>
                             </> : user.role === "admin" ?
                             <>
                                 <li><Link to="/admin/restaurants" className="hover:underline">Restaurants</Link></li>
-                                <li><Link to="/help" className="hover:underline">Requests</Link></li>
+                                <li><Link to="/restaurant/orders" className="hover:underline">Requests</Link></li>
                             </> : null }
                         </> :
                         <>
@@ -106,10 +106,10 @@ export default function Header(props){
                                         <MdAccountCircle className="w-6 h-6 text-zinc-700" />
                                         <p>Perfil</p>
                                     </button>
-                                    <button className="flex items-center space-x-1 p-2 hover:bg-slate-100">
+                                    { user.role === "user" ? <button className="flex items-center space-x-1 p-2 hover:bg-slate-100" onClick={() => { navigate('/addresses'); }}>
                                         <IoIosHome className="w-6 h-6 text-zinc-700" />
                                         <p>Endereços</p>
-                                    </button>
+                                    </button> : null }
                                     <button className="flex items-center space-x-1 p-2 hover:bg-slate-100" onClick={() => { logout(); }}>
                                         <PiSignOut className="w-6 h-6 text-zinc-700" />
                                         <p>Terminar Sessão</p>

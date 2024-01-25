@@ -10,6 +10,7 @@ export default function CartOverview(props){
 
     const { setUserCart, userCart } = useUser();
     const [localItemsUser, setLocalItemsUser] = useState([]);
+    const [addressesList, setAddressesList] = useState([]);
     const [cartStep, setCartStep] = useState(0);
     const [formEndCart, setFormEndCart] = useState({
         paymethod: "MBWay",
@@ -21,7 +22,7 @@ export default function CartOverview(props){
             const food = (await api.get('/food/' + itemId)).data;
             return food;
         }catch(err){
-            console.log(err);
+
         }
     }
 
@@ -30,6 +31,19 @@ export default function CartOverview(props){
         localStorage.setItem("@justeat/cart", JSON.stringify(allCarts));
         setUserCart(allCarts);
     }
+
+    useEffect(() => {
+        if(cartStep === 1){
+            loadAddresses();
+        }
+        async function loadAddresses(){
+            api.get('/addresses').then((respAddress) => {
+                setAddressesList(respAddress.data);
+            }).catch((err) => {
+
+            });
+        }    
+    }, [cartStep]);
 
     useEffect(() => {
         async function loadCart() {
@@ -118,7 +132,11 @@ export default function CartOverview(props){
                         <p>Address: </p>
                         <select className="bg-zinc-100 p-1 mt-0.5 rounded outline-none" name="address" value={formEndCart.address} onChange={handleChangeForm}>
                             <option value="default">--- Select an address ---</option>
-                            <option value="asdasd">asdasd</option>
+                            { addressesList.map((address) => {
+                                return (
+                                    <option value={address._id}>{address.addressLineOne + " " + address.addressLineTwo}</option>
+                                );
+                            }) }
                         </select>
                     </div>
                     <div className="flex flex-col">
