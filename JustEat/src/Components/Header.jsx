@@ -92,9 +92,9 @@ export default function Header(props){
                 <div className="lg:flex hidden font-poppins items-center space-x-8">
                     { Object.keys(user).length > 0 ?
                     <>
-                        { user.role === "user" ? <div className="flex bg-slate-100 hover:bg-slate-200 hover:cursor-pointer p-2 items-center space-x-2 rounded" onClick={() => { props.openCart(true); }}>
+                        { user.role === "user" || props.showCart ? <div className="flex bg-slate-100 hover:bg-slate-200 hover:cursor-pointer p-2 items-center space-x-2 rounded" onClick={() => { props.openCart(true); }}>
                             <FaCartShopping className="w-6 h-6 text-[#8C52FF]" />
-                            <p className="font-poppins text-[#8C52FF]">{userCart.length + " " +  (userCart.length === 1 ? "Item" : "Itens")}</p>
+                            <p className="font-poppins text-[#8C52FF]">{props.showCart && userCart.length === 0 ? "See cart" : (userCart.length + " " +  (userCart.length === 1 ? "Item" : "Itens"))}</p>
                         </div> : null }
                         <div className="flex items-center space-x-2 hover:cursor-pointer" onClick={() => { setShowProfileMenu(!showProfileMenu); }}>
                             <img src={IMAGES_SERVER + user.photo} className="w-10" />

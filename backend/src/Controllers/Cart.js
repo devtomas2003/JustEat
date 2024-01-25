@@ -160,3 +160,29 @@ export async function UpdateCartStatus(req, res){
         "code": 2
     });
 }
+
+export async function GetCartItemsById(req, res){
+    const cartId = req.params.cartId;
+
+    if(!cartId){
+        return res.status(400).json({
+            "message": "Missing fields! See API documentation",
+            "code": 0
+        });
+    }
+
+    Cart.findById(cartId).then(async (cartData) => {
+        const cartItems = await CartItems.find({
+            cartId
+        });
+        res.status(200).json({
+            cartData,
+            cartItems
+        });
+    }).catch((err) => {
+        res.status(404).json({
+            "message": "Cart not found",
+            "code": 0
+        });
+    })
+}

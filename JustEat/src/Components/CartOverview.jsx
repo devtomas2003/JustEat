@@ -26,9 +26,33 @@ export default function CartOverview(props){
         }
     }
 
+    useEffect(() => {
+        async function preloadCart(){
+            api.get('/cartItems/' + props.preCartData).then(async (cartData) => {
+                const cartInfo = [];
+                for (const cartItem of cartData.data.cartItems) {
+                    cartInfo.push({
+                        renderId: Math.random().toString(16).slice(2),
+                        foodId: cartItem.productId
+                    });
+                }
+                setUserCart(cartInfo);
+                setFormEndCart({
+                    paymethod: cartData.data.cartData.paymentMethod,
+                    address: cartData.data.cartData.deliveryAddress
+                });
+            });
+        }
+        if(props.preCartData){
+            preloadCart();
+        }
+    }, []);
+
     async function handleRemoveItem(renderId){
         const allCarts = userCart.filter(item => item.renderId !== renderId);
-        localStorage.setItem("@justeat/cart", JSON.stringify(allCarts));
+        if(!props.preCartData){
+            localStorage.setItem("@justeat/cart", JSON.stringify(allCarts));
+        }
         setUserCart(allCarts);
     }
 

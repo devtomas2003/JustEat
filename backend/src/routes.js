@@ -5,7 +5,7 @@ import { BasicAuth, Auth } from "./Middlewares/Auth";
 import { AuthenticateUser, CreateAccount, UserInfo } from "./Controllers/Users";
 import { CreateRestaurant, GetAllRestaurants, GetMyRestaurant, GetRestaurant, GetRestaurants, UpdateRestaurant } from "./Controllers/Restaurants";
 import { CreateFood, GetFood } from "./Controllers/Food";
-import { GetAllCartFromUser, SaveCart, UpdateCartStatus } from "./Controllers/Cart";
+import { GetAllCartFromUser, GetCartItemsById, SaveCart, UpdateCartStatus } from "./Controllers/Cart";
 import { CreateOrUpdateAddresses, DeleteAddress, GetAddress, GetAllAddresses } from "./Controllers/Addresses";
 
 const routes = express.Router();
@@ -29,6 +29,7 @@ routes.get('/addresses', Auth, GetAllAddresses);
 routes.put('/updateAddress/:addressId', Auth, CreateOrUpdateAddresses);
 routes.post('/createAddress', Auth, CreateOrUpdateAddresses);
 routes.get('/address', Auth, GetAddress);
+routes.get('/cartItems/:cartId', Auth, GetCartItemsById);
 routes.delete('/deleteAddress', Auth, DeleteAddress);
 routes.patch('/updateCartStatus/:cartId', Auth, UpdateCartStatus);
 

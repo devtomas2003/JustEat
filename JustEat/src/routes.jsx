@@ -23,6 +23,7 @@ export default function Router(){
                         <Route path="/" element={<Home />} />
                         <Route path="/signup" element={<SignUp />} />
                         <Route path="/restaurant/:slug" element={<Restaurant />} />
+                        <Route path="/restaurant/:slug/:cartId" element={<Restaurant />} />
                         <Route path="/admin/restaurants" element={<ListRestaurants />} />
                         <Route path="/admin/restaurant/:slug" element={<RestaurantDetail />} />
                         <Route path="/admin/orders" element={<Orders />} />

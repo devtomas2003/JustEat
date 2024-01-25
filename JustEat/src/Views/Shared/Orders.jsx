@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Header from "../../Components/Header";
 import { useUser } from "../../Contexts/User";
 import api from "../../services/api";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IoMdClose } from "react-icons/io";
 import { FaCheck, FaPencilAlt } from "react-icons/fa";
 import { useUtils } from "../../Contexts/Utils";
@@ -12,6 +12,7 @@ export default function Orders(){
     const { getUserInfo, user } = useUser();
     const { showNotification } = useUtils();
     const [carts, setCarts] = useState([]);
+    const navigate = useNavigate();
     
     useEffect(() => {
         getUserInfo();
@@ -25,6 +26,15 @@ export default function Orders(){
     }, []);
 
     async function approveCart(cartId){
+        const newState = carts.map(obj => {
+            if (obj._id === cartId) {
+              return {...obj, status: "APPROVED"};
+            }
+            return obj;
+        });
+        
+        setCarts(newState);
+
         await api.patch('/updateCartStatus/' + cartId, {
             "status": "APPROVED"
         }).then((resp) => {
@@ -40,6 +50,16 @@ export default function Orders(){
             if(user.role === "user"){
                 rejectStatus = "CANCELLED";
             }
+
+            const newState = carts.map(obj => {
+                if (obj._id === cartId) {
+                  return {...obj, status: rejectStatus};
+                }
+                return obj;
+            });
+            
+            setCarts(newState);
+
             await api.patch('/updateCartStatus/' + cartId, {
                 "status": rejectStatus
             }).then((resp) => {
@@ -94,7 +114,7 @@ export default function Orders(){
                                                     <FaCheck className="w-6 h-6 text-white" />
                                                     <p className="text-white font-poppins">Aceitar</p>
                                                 </div> : null }
-                                                { user.role === "admin" && cartData.status === "PENDING" ? <div className="bg-emerald-500 p-2 rounded w-fit flex items-center space-x-2 hover:bg-500-600 hover:cursor-pointer">
+                                                { user.role === "admin" && cartData.status === "PENDING" ? <div className="bg-emerald-500 p-2 rounded w-fit flex items-center space-x-2 hover:bg-500-600 hover:cursor-pointer" onClick={() => { navigate("/restaurant/" + cartData.id + "/" + cartData._id); }}>
                                                     <FaPencilAlt className="w-6 h-6 text-white" />
                                                     <p className="text-white font-poppins">Edit</p>
                                                 </div> : null }

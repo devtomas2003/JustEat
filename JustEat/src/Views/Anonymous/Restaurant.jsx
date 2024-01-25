@@ -14,7 +14,7 @@ export default function Restaurant(){
     const [showCart, setShowCart] = useState(false);
     const [restaurant, setRestaurant] = useState({});
     const [foods, setFoods] = useState([]);
-    const { slug } = useParams();
+    const { slug, cartId } = useParams();
     const { getUserInfo } = useUser();
 
     useEffect(() => {
@@ -37,11 +37,11 @@ export default function Restaurant(){
 
     return (
         <div className="absolute w-full h-full flex flex-col">
-            { showCart ? <CartOverview closeCart={setShowCart} /> : null }
+            { showCart ? <CartOverview closeCart={setShowCart} preCartData={cartId} /> : null }
             { Object.keys(restaurant).length > 0 ?
             <div className="flex flex-col min-w-full min-h-full">
                 <div className="p-8 flex flex-col">
-                    <Header openCart={setShowCart} />
+                    <Header openCart={setShowCart} showCart={cartId !== null} />
                     <div className="flex mt-8 space-x-4">
                         <div className="w-3/4 h-full">
                             <div style={{ backgroundImage: `url(${IMAGES_SERVER + restaurant.photo})` }} className="w-full h-full rounded-xl bg-no-repeat bg-cover bg-center" />
