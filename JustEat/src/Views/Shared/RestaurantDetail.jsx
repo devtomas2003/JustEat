@@ -1,6 +1,6 @@
 import Header from "../../Components/Header";
 import { FaRegSave } from "react-icons/fa";
-import { MdAddPhotoAlternate } from "react-icons/md";
+import { MdAddPhotoAlternate, MdDelete } from "react-icons/md";
 import Footer from "../../Components/Footer";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -10,7 +10,7 @@ import api from "../../services/api";
 import { useUser } from "../../Contexts/User";
 import { IMAGES_SERVER } from "../../services/env";
 import { useUtils } from "../../Contexts/Utils";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const submitRestaurantForm = z.object({
     name: z.string().min(1, 'The name is required!'),
@@ -22,20 +22,21 @@ const submitRestaurantForm = z.object({
     latitude: z.string().min(5, 'The Latitude is required!'),
     longitude: z.string().min(1, 'The Longitude is required!'),
     email: z.string().email('The email address is not valid!'),
-    phone: z.number().min(9, 'The Phone Number is required!'),
+    phone: z.string().min(9, 'The Phone Number is required!'),
     description: z.string().min(10, 'A small description is required!')
 });
 
-export default function RestaurantDetail(){
+export default function RestaurantDetail(props){
 
     const { getUserInfo } = useUser();
     const { showNotification } = useUtils();
     let { slug } = useParams();
+    const navigate = useNavigate();
 
     const [restaurantMetadata, setRestaurantMetadata] = useState({});
     const [selectedRestDays, setSelectedRestDays] = useState([]);
 
-    const { register, handleSubmit, formState: { errors }, setError, setValue } = useForm({
+    const { register, handleSubmit, formState: { errors }, setValue } = useForm({
         resolver: zodResolver(submitRestaurantForm),
         mode: 'onChange'
     });
@@ -44,8 +45,9 @@ export default function RestaurantDetail(){
         if(selectedRestDays.length === 7){
             showNotification("The Restaurant need to be opened at least 1 day!", 1);
         }else{
-            if(slug){
-                api.put('/updateRestaurant/' + slug, {
+            if(slug || props.isOwn){
+                const path = props.isOwn ? "own" : slug;
+                api.put('/updateRestaurant/' + path, {
                     name: restaurantData.name,
                     email: restaurantData.email,
                     vat: restaurantData.vat,
@@ -64,7 +66,7 @@ export default function RestaurantDetail(){
                     showNotification(errorResp.response.data.message, errorResp.response.data.code);
                 })
             }else{
-                api.post('/updateRestaurant/own', {
+                api.post('/createRestaurant', {
                     name: restaurantData.name,
                     email: restaurantData.email,
                     vat: restaurantData.vat,
@@ -102,7 +104,9 @@ export default function RestaurantDetail(){
                 });
             }
         }
-        loadRestaurant();
+        if(props.isOwn || slug){
+            loadRestaurant();
+        }
     }, []);
 
     function loadData(restData){
@@ -110,7 +114,7 @@ export default function RestaurantDetail(){
         setValue('vat', restData.vat.toString());
         setValue('addressLineOne', restData.addressLineOne);
         setValue('addressLineTwo', restData.addressLineTwo);
-        setValue('phone', restData.phone);
+        setValue('phone', restData.phone.toString());
         setValue('email', restData.email);
         setValue('latitude', restData.latitude);
         setValue('longitude', restData.longitude);
@@ -134,13 +138,24 @@ export default function RestaurantDetail(){
         });
     }
 
+    function deleteRestaurant(){
+        if(confirm("Are you sure you want to delete this restaurant?")){
+            api.delete('/deleteRestaurant/' + slug).then((restResponse) => {
+                showNotification(restResponse.data.message, 2);
+            }).catch((errorResp) => {
+                showNotification(errorResp.response.data.message, errorResp.response.data.code);
+            })
+            navigate("/admin/restaurants");
+        }
+    }
+
     return (
         <div className="absolute w-full h-full flex flex-col">
             <div className="flex flex-col min-w-full min-h-full">
                 <div className="p-8 h-full">
                     <Header />
                     <div className="mt-4 h-full">
-                        <h1 className="text-zinc-800 font-poppins text-lg">Information Of {restaurantMetadata.name}</h1>
+                        <h1 className="text-zinc-800 font-poppins text-lg">{Object.keys(restaurantMetadata).length > 0 ? 'Information Of ' + restaurantMetadata.name : 'New Restaurant'}</h1>
                         <form className="flex flex-col mt-4" onSubmit={handleSubmit(submitRestaurant)}>
                             <div className="flex justify-between lg:space-x-2 lg:space-y-0 space-y-2 flex-col lg:flex-row">
                                 <div className="w-full flex flex-col space-y-2">
@@ -239,8 +254,12 @@ export default function RestaurantDetail(){
                                     </div>
                                 </div>
                             </div>
-                            <div className="w-full flex justify-end mt-4">
-                                <button className="p-2 rounded bg-emerald-600 hover:bg-emerald-700 flex items-center space-x-1">
+                            <div className="w-full flex justify-end mt-4 space-x-2">
+                                { slug ? <button className="p-2 rounded bg-red-600 hover:bg-red-700 flex items-center space-x-1" type="button" onClick={() => { deleteRestaurant(); }}>
+                                    <MdDelete className="w-6 h-6 text-white" />
+                                    <p className="font-poppins text-white font-semibold">Delete</p>
+                                </button> : null }
+                                <button className="p-2 rounded bg-emerald-600 hover:bg-emerald-700 flex items-center space-x-1" type="submit">
                                     <FaRegSave className="w-6 h-6 text-white" />
                                     <p className="font-poppins text-white font-semibold">Save</p>
                                 </button>

@@ -66,20 +66,6 @@ export async function SaveCart(req, res){
     });
 }
 
-export async function GetFood(req, res){
-    const foodId = req.params.foodId;
-
-    if(!foodId){
-        res.status(400).json({
-            "message": "Missing field! See API documentation"
-        });
-    }
-
-    Food.findById(foodId).then((foodItem) => {
-        res.status(200).json(foodItem);
-    });
-}
-
 export async function GetAllCartFromUser(req, res) {
     try {
         const cartData = await Cart.find({
@@ -161,7 +147,7 @@ export async function UpdateCartStatus(req, res){
     });
 }
 
-export async function GetCartItemsById(req, res){
+export async function GetCartMetadata(req, res){
     const cartId = req.params.cartId;
 
     if(!cartId){
@@ -171,18 +157,55 @@ export async function GetCartItemsById(req, res){
         });
     }
 
-    Cart.findById(cartId).then(async (cartData) => {
-        const cartItems = await CartItems.find({
-            cartId
-        });
-        res.status(200).json({
-            cartData,
-            cartItems
-        });
+    Cart.findById(cartId, {
+        deliveryAddress: true,
+        paymentMethod: true
+    }).then(async (cartData) => {
+        res.status(200).json(cartData);
     }).catch((err) => {
         res.status(404).json({
             "message": "Cart not found",
             "code": 0
         });
     })
+}
+
+export async function UpdateCart(req, res){
+    const cartId = req.params.cartId;
+    const paymethod = req.body.paymethod;
+    const observations = req.body.observations;
+    const address = req.body.address;
+    const foods = req.body.foods;
+
+    if(!foods || !address || !paymethod || !cartId){
+        return res.status(400).json({
+            "message": "Missing fields! See API documentation",
+            "code": 0
+        });
+    }
+
+    await CartItems.deleteMany({
+        cartId
+    });
+
+    foods.forEach(async (food) => {
+        await CartItems.create({
+            cartId,
+            observations: 'N/A',
+            productId: food.id
+        });
+    });
+
+    await Cart.updateOne({
+        _id: cartId
+    }, {
+        paymentMethod: paymethod,
+        deliveryAddress: address,
+        observations
+    });
+
+    res.status(200).json({
+        "message": "Cart updated!",
+        "code": 2
+    });
 }

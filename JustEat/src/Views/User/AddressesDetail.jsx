@@ -1,7 +1,7 @@
 import Header from "../../Components/Header";
 import { FaRegSave } from "react-icons/fa";
 import Footer from "../../Components/Footer";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -69,7 +69,7 @@ export default function AddressDetail(){
                 <div className="p-8 h-full">
                     <Header />
                     <div className="mt-4 h-full">
-                        <h1 className="text-zinc-800 font-poppins text-lg">Information Of asdasd</h1>
+                        <h1 className="text-zinc-800 font-poppins text-lg">Address Details</h1>
                         <form className="flex flex-col mt-4" onSubmit={handleSubmit(submitAddress)}>
                             <div className="flex justify-between lg:space-x-2 lg:space-y-0 space-y-2 flex-col lg:flex-row">
                                 <div className="w-full flex flex-col space-y-2">

@@ -14,7 +14,7 @@ export default function Restaurant(){
     const [showCart, setShowCart] = useState(false);
     const [restaurant, setRestaurant] = useState({});
     const [foods, setFoods] = useState([]);
-    const { slug, cartId } = useParams();
+    const { slug } = useParams();
     const { getUserInfo } = useUser();
 
     useEffect(() => {
@@ -35,13 +35,39 @@ export default function Restaurant(){
         return workTime.getHours().toString().padStart(2, "0") + ":" + workTime.getMinutes().toString().padStart(2, "0")
     }
 
+    function verifyIfIsOpen(openTime, closeTime, listOfRestDays){
+        const openTimeDate = new Date(openTime);
+        const closeTimeDate = new Date(closeTime);
+        const now = new Date();
+
+        openTimeDate.setDate(now.getDate());
+        openTimeDate.setMonth(now.getMonth());
+        openTimeDate.setFullYear(now.getFullYear());
+
+        closeTimeDate.setDate(now.getDate());
+        closeTimeDate.setMonth(now.getMonth());
+        closeTimeDate.setFullYear(now.getFullYear());
+        
+        if(now <= openTimeDate || now >= closeTimeDate){
+            return false;
+        }
+
+        const nowDay = now.toLocaleDateString('en-EN', { weekday: 'long' })
+ 
+        if(listOfRestDays.includes(nowDay)){
+            return false;
+        }
+
+        return true;
+    }
+
     return (
         <div className="absolute w-full h-full flex flex-col">
-            { showCart ? <CartOverview closeCart={setShowCart} preCartData={cartId} /> : null }
+            { showCart ? <CartOverview closeCart={setShowCart} /> : null }
             { Object.keys(restaurant).length > 0 ?
             <div className="flex flex-col min-w-full min-h-full">
                 <div className="p-8 flex flex-col">
-                    <Header openCart={setShowCart} showCart={cartId !== null} />
+                    <Header openCart={setShowCart} />
                     <div className="flex mt-8 space-x-4">
                         <div className="w-3/4 h-full">
                             <div style={{ backgroundImage: `url(${IMAGES_SERVER + restaurant.photo})` }} className="w-full h-full rounded-xl bg-no-repeat bg-cover bg-center" />
@@ -73,7 +99,7 @@ export default function Restaurant(){
                     <div className="mt-1 grid lg:grid-cols-4 gap-4">
                         { foods.map((food) => {
                             return (
-                                <FoodCard key={food._id} food={food} />
+                                <FoodCard key={food._id} food={food} isOpen={verifyIfIsOpen(restaurant.openingTime, restaurant.closedTime, restaurant.restDays)} />
                             );
                         }) }
                     </div>

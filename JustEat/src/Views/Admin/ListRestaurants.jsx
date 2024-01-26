@@ -5,9 +5,11 @@ import RestaurantCard from "../../Components/RestaurantCard";
 import { IoIosAddCircle } from "react-icons/io";
 import api from "../../services/api";
 import { useUser } from "../../Contexts/User";
+import { useNavigate } from "react-router-dom";
 
 export default function ListRestaurants(){
     const { getUserInfo } = useUser();
+    const navigate = useNavigate();
     const [allRestaurants, setAllRestaurants] = useState([]);
 
     useEffect(() => {
@@ -27,7 +29,7 @@ export default function ListRestaurants(){
                 <div className="mt-6">
                     <div className="flex items-center justify-between">
                         <h1 className="font-poppins text-zinc-800 text-xl font-semibold">List of Restaurants</h1>
-                        <div className="hover:cursor-pointer group" title="Add Restaurant">
+                        <div className="hover:cursor-pointer group" title="Add Restaurant" onClick={() => { navigate("/admin/restaurant/new"); }}>
                             <IoIosAddCircle className="w-10 h-10 text-emerald-600 group-hover:text-emerald-700" />
                         </div>
                     </div>

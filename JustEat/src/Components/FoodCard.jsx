@@ -8,15 +8,19 @@ export default function FoodCard(props){
     const { setUserCart, userCart } = useUser();
 
     function addCard(foodId){
-        setUserCart([...userCart, {
-            renderId: Math.random().toString(16).slice(2),
-            foodId
-        }]);
-        localStorage.setItem("@justeat/cart", JSON.stringify([...userCart, {
-            renderId: Math.random().toString(16).slice(2),
-            foodId
-        }]));
-        showNotification("Item added to your cart!", 2);
+        if(props.isOpen){
+            setUserCart([...userCart, {
+                renderId: Math.random().toString(16).slice(2),
+                foodId
+            }]);
+            localStorage.setItem("@justeat/cart", JSON.stringify([...userCart, {
+                renderId: Math.random().toString(16).slice(2),
+                foodId
+            }]));
+            showNotification("Item added to your cart!", 2);
+        }else{
+            showNotification("The restaurant is closed!", 1);
+        }
     }
 
     return (

@@ -55,6 +55,7 @@ export async function GetAllRestaurants(req, res){
 
     res.status(200).json(allRestaurants);
 }
+
 export async function CreateRestaurant(req, res){
     const name = req.body.name;
     const photo = req.body.photo;
@@ -298,4 +299,41 @@ export async function UpdateRestaurant(req, res){
     res.status(200).json({
         "message": "Restaurant updated successfully!"
     });
+}
+
+export async function GetAllRestaurantsNames(req, res){
+    const restaurants = await Restaurants.find({}, {
+        name: true
+    });
+    
+    res.status(200).json(restaurants);
+}
+
+export async function DeleteRestaurant(req, res){
+    const restaurantId = req.params.restaurantId;
+
+    if(!restaurantId){
+        return res.status(400).json({
+            "message": "Missing fields! See API documentation",
+            "code": 0
+        });
+    }
+
+    try {
+        await Restaurants.updateOne({
+            _id: restaurantId
+        }, {
+            isActive: false
+        });
+
+        res.status(200).json({
+            "message": "Restaurant deleted successfully",
+            "code": 2
+        });
+    }catch(e){
+        res.status(200).json({
+            "message": "Restaurant not found!",
+            "code": 0
+        });
+    }
 }

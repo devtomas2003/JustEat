@@ -2,10 +2,10 @@ import express from "express";
 
 import { BasicAuth, Auth } from "./Middlewares/Auth";
 
-import { AuthenticateUser, CreateAccount, UserInfo } from "./Controllers/Users";
-import { CreateRestaurant, GetAllRestaurants, GetMyRestaurant, GetRestaurant, GetRestaurants, UpdateRestaurant } from "./Controllers/Restaurants";
+import { AuthenticateUser, CreateAccount, GetAllUsers, GetUserPermissionsMetadata, UpdatePermissions, UserInfo } from "./Controllers/Users";
+import { CreateRestaurant, DeleteRestaurant, GetAllRestaurants, GetAllRestaurantsNames, GetMyRestaurant, GetRestaurant, GetRestaurants, UpdateRestaurant } from "./Controllers/Restaurants";
 import { CreateFood, GetFood } from "./Controllers/Food";
-import { GetAllCartFromUser, GetCartItemsById, SaveCart, UpdateCartStatus } from "./Controllers/Cart";
+import { GetAllCartFromUser, GetCartMetadata, SaveCart, UpdateCart, UpdateCartStatus } from "./Controllers/Cart";
 import { CreateOrUpdateAddresses, DeleteAddress, GetAddress, GetAllAddresses } from "./Controllers/Addresses";
 
 const routes = express.Router();
@@ -18,19 +18,25 @@ routes.get('/allRestaurants', Auth, GetAllRestaurants);
 routes.get('/restaurant/:slug', GetRestaurant);
 routes.get('/myRestaurant', Auth, GetMyRestaurant);
 routes.get('/restaurantOverview', Auth, GetMyRestaurant);
-routes.post('/createRestaurant', CreateRestaurant);
 routes.put('/updateRestaurant/:restaurantId', Auth, UpdateRestaurant);
-routes.post('/updateRestaurant/:restaurantId', Auth, UpdateRestaurant);
+routes.post('/createRestaurant', Auth, CreateRestaurant);
 routes.post('/createFood', CreateFood);
 routes.post('/createCart', Auth, SaveCart);
+routes.put('/updateCart/:cartId', Auth, UpdateCart);
 routes.get('/food/:foodId', GetFood);
 routes.get('/GetAllCartFromUser', Auth, GetAllCartFromUser);
 routes.get('/addresses', Auth, GetAllAddresses);
+routes.get('/addresses/:userId', Auth, GetAllAddresses);
 routes.put('/updateAddress/:addressId', Auth, CreateOrUpdateAddresses);
 routes.post('/createAddress', Auth, CreateOrUpdateAddresses);
 routes.get('/address', Auth, GetAddress);
-routes.get('/cartItems/:cartId', Auth, GetCartItemsById);
+routes.get('/cartMetadata/:cartId', Auth, GetCartMetadata);
+routes.get('/users', Auth, GetAllUsers);
+routes.get('/permission', Auth, GetUserPermissionsMetadata);
 routes.delete('/deleteAddress', Auth, DeleteAddress);
+routes.delete('/deleteRestaurant/:restaurantId', Auth, DeleteRestaurant);
+routes.get('/restaurantsName', Auth, GetAllRestaurantsNames);
+routes.patch('/updatePermissions/:userId', Auth, UpdatePermissions);
 routes.patch('/updateCartStatus/:cartId', Auth, UpdateCartStatus);
 
 export default routes;

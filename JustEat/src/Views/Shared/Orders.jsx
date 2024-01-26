@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Header from "../../Components/Header";
 import { useUser } from "../../Contexts/User";
 import api from "../../services/api";
@@ -9,9 +9,11 @@ import { useUtils } from "../../Contexts/Utils";
 
 export default function Orders(){
 
-    const { getUserInfo, user } = useUser();
+    const { getUserInfo, user, setUserCart, userCart } = useUser();
     const { showNotification } = useUtils();
     const [carts, setCarts] = useState([]);
+    const [cartsFiltered, setCartsFiltered] = useState([]);
+    const [searchText, setSearchText] = useState('');
     const navigate = useNavigate();
     
     useEffect(() => {
@@ -70,17 +72,38 @@ export default function Orders(){
         }
     }
 
+    function startEditCart(restaurantId, foodList, cartId, userId){
+        const editCart = [];
+        foodList.forEach((itemsList) => {
+            editCart.push({
+                renderId: Math.random().toString(16).slice(2),
+                foodId: itemsList.productId
+            });
+        });
+        setUserCart(editCart);
+        localStorage.setItem("@justeat/cart", JSON.stringify(editCart));
+        localStorage.setItem("@justeat/isEditing", cartId);
+        localStorage.setItem("@justeat/userId", userId);
+        navigate('/restaurant/' + restaurantId);
+    }
+
+    useEffect(() => {
+        const filteredText = carts.filter((cartInfo) => cartInfo.name.toLowerCase().includes(searchText.toLowerCase()));
+        setCartsFiltered(filteredText);
+    }, [searchText, carts]);
+
     return (
         <div className="absolute w-full h-full flex flex-col">
             <div className="flex flex-col min-w-full min-h-full p-8">
                 <Header />
                 <div className="mt-8">
                     <h1 className="font-poppins text-zinc-700 text-2xl">{ user.role === "user" || user.role === "manager" ? 'My Orders' : 'All Orders' }</h1>
+                    { user.role === "admin" ? <input type="text" placeholder="Search for a Restaurant" className="p-2 border w-full mt-2 outline-none" value={searchText} onChange={(e) => { setSearchText(e.target.value); }} /> : null }
                     <table className="w-full mt-8">
                         <thead>
                             <tr>
                                 { user.role !== "user" ? <td className="border border-zinc-300 p-2">Cliente</td> : null }
-                                <td className="border border-zinc-300 p-2">Restaurant</td>
+                                { user.role !== "manager" ? <td className="border border-zinc-300 p-2">Restaurant</td> : null }
                                 <td className="border border-zinc-300 p-2">Timestamp</td>
                                 <td className="border border-zinc-300 p-2">Price</td>
                                 <td className="border border-zinc-300 p-2">Observations</td>
@@ -92,11 +115,12 @@ export default function Orders(){
                             </tr>
                         </thead>
                         <tbody>
-                            { carts.map((cartData) => {
+                            { cartsFiltered.length > 0 ? <Fragment>
+                            { cartsFiltered.map((cartData) => {
                                 return (
                                     <tr key={cartData._id}>
                                         { user.role !== "user" ? <td className="text-center border border-zinc-300 p-2">{cartData.usersData.nome}</td> : null }
-                                        <td className="text-center border border-zinc-300 p-2"><Link to={"/restaurant/" + cartData.id} className="underline">{cartData.name}</Link></td>
+                                        { user.role !== "manager" ? <td className="text-center border border-zinc-300 p-2"><Link to={"/restaurant/" + cartData.id} className="underline">{cartData.name}</Link></td> : null }
                                         <td className="text-center border border-zinc-300 p-2">{new Date(cartData.date).toLocaleString('pt-PT')}</td>
                                         <td className="text-center border border-zinc-300 p-2">{parseFloat(cartData.price).toFixed(2).replace(".", ",") + " €"}</td>
                                         <td className="text-center border border-zinc-300 p-2">{cartData.observations}</td>
@@ -114,7 +138,7 @@ export default function Orders(){
                                                     <FaCheck className="w-6 h-6 text-white" />
                                                     <p className="text-white font-poppins">Aceitar</p>
                                                 </div> : null }
-                                                { user.role === "admin" && cartData.status === "PENDING" ? <div className="bg-emerald-500 p-2 rounded w-fit flex items-center space-x-2 hover:bg-500-600 hover:cursor-pointer" onClick={() => { navigate("/restaurant/" + cartData.id + "/" + cartData._id); }}>
+                                                { user.role === "admin" && cartData.status === "PENDING" ? <div className="bg-emerald-500 p-2 rounded w-fit flex items-center space-x-2 hover:bg-500-600 hover:cursor-pointer" onClick={() => { startEditCart(cartData.id, cartData.allItems, cartData._id, cartData.usersData._id); }}>
                                                     <FaPencilAlt className="w-6 h-6 text-white" />
                                                     <p className="text-white font-poppins">Edit</p>
                                                 </div> : null }
@@ -123,6 +147,11 @@ export default function Orders(){
                                     </tr>
                                 );
                             }) }
+                            </Fragment> :
+                            <tr className="text-center">
+                                <td colSpan={10} className="border border-zinc-300 p-2">No orders!</td>
+                            </tr>
+                            }
                         </tbody>
                     </table>
                 </div>

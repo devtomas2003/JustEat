@@ -1,8 +1,14 @@
 import Addresses from "../Models/Addresses";
 
 export async function GetAllAddresses(req, res){
+    let userId = req.params.userId;
+    
+    if(!userId){
+        userId = req.userId;
+    }
+
     Addresses.find({
-        clientId: req.userId,
+        clientId: userId,
         status: true
     }).then((addressList) => {
         res.status(200).json(addressList);

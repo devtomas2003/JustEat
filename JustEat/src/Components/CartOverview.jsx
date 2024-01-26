@@ -7,7 +7,6 @@ import { useUtils } from "../Contexts/Utils";
 
 export default function CartOverview(props){
     const { showNotification } = useUtils();
-
     const { setUserCart, userCart } = useUser();
     const [localItemsUser, setLocalItemsUser] = useState([]);
     const [addressesList, setAddressesList] = useState([]);
@@ -26,33 +25,9 @@ export default function CartOverview(props){
         }
     }
 
-    useEffect(() => {
-        async function preloadCart(){
-            api.get('/cartItems/' + props.preCartData).then(async (cartData) => {
-                const cartInfo = [];
-                for (const cartItem of cartData.data.cartItems) {
-                    cartInfo.push({
-                        renderId: Math.random().toString(16).slice(2),
-                        foodId: cartItem.productId
-                    });
-                }
-                setUserCart(cartInfo);
-                setFormEndCart({
-                    paymethod: cartData.data.cartData.paymentMethod,
-                    address: cartData.data.cartData.deliveryAddress
-                });
-            });
-        }
-        if(props.preCartData){
-            preloadCart();
-        }
-    }, []);
-
     async function handleRemoveItem(renderId){
         const allCarts = userCart.filter(item => item.renderId !== renderId);
-        if(!props.preCartData){
-            localStorage.setItem("@justeat/cart", JSON.stringify(allCarts));
-        }
+        localStorage.setItem("@justeat/cart", JSON.stringify(allCarts));
         setUserCart(allCarts);
     }
 
@@ -61,11 +36,19 @@ export default function CartOverview(props){
             loadAddresses();
         }
         async function loadAddresses(){
-            api.get('/addresses').then((respAddress) => {
-                setAddressesList(respAddress.data);
-            }).catch((err) => {
-
-            });
+            if(localStorage.getItem("@justeat/isEditing")){
+                api.get('/addresses/' + localStorage.getItem("@justeat/userId")).then((respAddress) => {
+                    setAddressesList(respAddress.data);
+                }).catch((err) => {
+    
+                });
+            }else{
+                api.get('/addresses').then((respAddress) => {
+                    setAddressesList(respAddress.data);
+                }).catch((err) => {
+    
+                });
+            }
         }    
     }, [cartStep]);
 
@@ -85,7 +68,6 @@ export default function CartOverview(props){
                     localCache.push(cartItem);
                 }
             }
-
             setLocalItemsUser(localCache);
         }
         loadCart();
@@ -104,27 +86,63 @@ export default function CartOverview(props){
         });
     }
 
+    
+    useEffect(() => {
+        async function preloadCart(cartId){
+            api.get('/cartMetadata/' + cartId).then(async (cartData) => {
+                setFormEndCart({
+                    paymethod: cartData.data.paymentMethod,
+                    address: cartData.data.deliveryAddress
+                });
+            });
+        }
+        if(localStorage.getItem("@justeat/isEditing")){
+            preloadCart(localStorage.getItem("@justeat/isEditing"));
+        }
+    }, []);
+
     function submitCart(e){
         e.preventDefault();
 
-        const simpleFoodList = localItemsUser.map((foodData) => {
-            return {id: foodData.food._id};
-        });
+        if(formEndCart.address === "default"){
+            showNotification("Please select an valid address!", 1);
+        }else{
+            const simpleFoodList = localItemsUser.map((foodData) => {
+                return {id: foodData.food._id};
+            });
 
-        api.post('/createCart', {
-            paymethod: formEndCart.paymethod,
-            address: formEndCart.address,
-            observations: 'N/A',
-            foods: simpleFoodList,
-            restaurantId: localItemsUser[0].food.restaurant
-        }).then((respCart) => {
-            setCartStep(2);
-            showNotification(respCart.data.message, respCart.data.code);
-            localStorage.removeItem("@justeat/cart");
-            setUserCart([]);
-        }).catch((err) => {
-            showNotification(err.reponse.data.message, err.reponse.data.code);
-        });
+            if(localStorage.getItem("@justeat/isEditing")){	
+                api.put('/updateCart/' + localStorage.getItem("@justeat/isEditing"), {
+                    paymethod: formEndCart.paymethod,
+                    address: formEndCart.address,
+                    observations: 'N/A',
+                    foods: simpleFoodList,
+                }).then((respCart) => {
+                    setCartStep(2);
+                    showNotification(respCart.data.message, respCart.data.code);
+                    localStorage.removeItem("@justeat/cart");
+                    localStorage.removeItem("@justeat/userId")
+                    setUserCart([]);
+                }).catch((err) => {
+                    showNotification(err.reponse.data.message, err.reponse.data.code);
+                });
+            }else{
+                api.post('/createCart', {
+                    paymethod: formEndCart.paymethod,
+                    address: formEndCart.address,
+                    observations: 'N/A',
+                    foods: simpleFoodList,
+                    restaurantId: localItemsUser[0].food.restaurant
+                }).then((respCart) => {
+                    setCartStep(2);
+                    showNotification(respCart.data.message, respCart.data.code);
+                    localStorage.removeItem("@justeat/cart");
+                    setUserCart([]);
+                }).catch((err) => {
+                    showNotification(err.reponse.data.message, err.reponse.data.code);
+                });
+            }
+        }
     }
 
     return (
@@ -158,7 +176,7 @@ export default function CartOverview(props){
                             <option value="default">--- Select an address ---</option>
                             { addressesList.map((address) => {
                                 return (
-                                    <option value={address._id}>{address.addressLineOne + " " + address.addressLineTwo}</option>
+                                    <option key={address._id} value={address._id}>{address.addressLineOne + " " + address.addressLineTwo}</option>
                                 );
                             }) }
                         </select>
