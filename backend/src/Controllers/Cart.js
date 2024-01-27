@@ -129,15 +129,14 @@ export async function UpdateCartStatus(req, res){
     const cartId = req.params.cartId;
     const status = req.body.status;
 
-    if(!cartId){
+    if(!cartId || !status) {
         return res.status(400).json({
             "message": "Missing fields! See API documentation",
             "code": 0
         });
     }
 
-    await Cart.updateOne({
-        _id: cartId,
+    await Cart.updateOne({_id: cartId}, {
         status
     });
 

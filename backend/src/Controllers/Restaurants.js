@@ -337,3 +337,23 @@ export async function DeleteRestaurant(req, res){
         });
     }
 }
+
+export async function UploadRestaurantImage(req, res){
+    try {
+        await Restaurants.updateOne({
+            _id: req.params.restaurantId
+        }, {
+            photo: req.fileName
+        })
+        res.status(200).json({
+            "message": "Restaurant image updated!",
+            "code": 1,
+            "fileName": req.fileName
+        });
+    }catch(e){
+        res.status(400).json({
+            "message": "Restaurant image not found!",
+            "code": 1
+        });
+    }
+}

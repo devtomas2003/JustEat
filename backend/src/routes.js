@@ -3,10 +3,13 @@ import express from "express";
 import { BasicAuth, Auth } from "./Middlewares/Auth";
 
 import { AuthenticateUser, CreateAccount, GetAllUsers, GetUserPermissionsMetadata, UpdatePermissions, UserInfo } from "./Controllers/Users";
-import { CreateRestaurant, DeleteRestaurant, GetAllRestaurants, GetAllRestaurantsNames, GetMyRestaurant, GetRestaurant, GetRestaurants, UpdateRestaurant } from "./Controllers/Restaurants";
+import { CreateRestaurant, DeleteRestaurant, GetAllRestaurants, GetAllRestaurantsNames, GetMyRestaurant, GetRestaurant, GetRestaurants, UpdateRestaurant, UploadRestaurantImage } from "./Controllers/Restaurants";
 import { CreateFood, GetFood } from "./Controllers/Food";
 import { GetAllCartFromUser, GetCartMetadata, SaveCart, UpdateCart, UpdateCartStatus } from "./Controllers/Cart";
 import { CreateOrUpdateAddresses, DeleteAddress, GetAddress, GetAllAddresses } from "./Controllers/Addresses";
+
+import multer from "multer";
+import Multer from "./Utils/Multer";
 
 const routes = express.Router();
 
@@ -38,5 +41,6 @@ routes.delete('/deleteRestaurant/:restaurantId', Auth, DeleteRestaurant);
 routes.get('/restaurantsName', Auth, GetAllRestaurantsNames);
 routes.patch('/updatePermissions/:userId', Auth, UpdatePermissions);
 routes.patch('/updateCartStatus/:cartId', Auth, UpdateCartStatus);
+routes.post('/restaurantImageUpload/:restaurantId', multer(Multer).single('file'), UploadRestaurantImage);
 
 export default routes;

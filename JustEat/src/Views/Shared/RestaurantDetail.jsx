@@ -2,7 +2,7 @@ import Header from "../../Components/Header";
 import { FaRegSave } from "react-icons/fa";
 import { MdAddPhotoAlternate, MdDelete } from "react-icons/md";
 import Footer from "../../Components/Footer";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,6 +35,7 @@ export default function RestaurantDetail(props){
 
     const [restaurantMetadata, setRestaurantMetadata] = useState({});
     const [selectedRestDays, setSelectedRestDays] = useState([]);
+    const [imgUpload, setImageUpload] = useState();
 
     const { register, handleSubmit, formState: { errors }, setValue } = useForm({
         resolver: zodResolver(submitRestaurantForm),
@@ -147,6 +148,26 @@ export default function RestaurantDetail(props){
             })
             navigate("/admin/restaurants");
         }
+    }
+
+    function doUpload(){
+        const formData = new FormData();
+        formData.append("file", imgUpload);
+        const path = props.isOwn ? "own" : slug;
+
+        api.post('/restaurantImageUpload/' + path, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }).then((restResponse) => {
+            showNotification(restResponse.data.message, 2);
+            setRestaurantMetadata({
+                ...restaurantMetadata,
+                photo: restResponse.data.fileName
+            });
+        }).catch((errorResp) => {
+            showNotification(errorResp.response.data.message, errorResp.response.data.code);
+        });
     }
 
     return (
@@ -265,12 +286,21 @@ export default function RestaurantDetail(props){
                                 </button>
                             </div>
                         </form>
-                        <h1 className="text-zinc-800 font-poppins text-lg mt-2">Profile Photo</h1>
-                        <img src={IMAGES_SERVER + restaurantMetadata.photo} className="w-96 mt-2 rounded" title={restaurantMetadata.name} alt={restaurantMetadata.name} />
-                        <button className="p-2 rounded bg-emerald-600 hover:bg-emerald-700 flex items-center space-x-1 mt-2">
-                            <MdAddPhotoAlternate className="w-6 h-6 text-white" />
-                            <p className="font-poppins text-white font-semibold">Change</p>
-                        </button>
+                        <h1 className="text-zinc-800 font-poppins text-lg">Profile Photo</h1>
+                        <img src={IMAGES_SERVER + restaurantMetadata.photo} className="h-40 mt-2 rounded" title={restaurantMetadata.name} alt={restaurantMetadata.name} />
+                        { slug || props.isOwn ?
+                        <Fragment>
+                            <input
+                                type="file"
+                                className="mt-4"
+                                onChange={(e) => { setImageUpload(e.target.files[0]); }}
+                            />
+                            <button className="p-2 rounded bg-emerald-600 hover:bg-emerald-700 flex items-center space-x-1 mt-2" onClick={() => { doUpload(); }}>
+                                <MdAddPhotoAlternate className="w-6 h-6 text-white" />
+                                <p className="font-poppins text-white font-semibold">Change</p>
+                            </button>
+                        </Fragment>
+                        : null }
                     </div>
                 </div>
                 <Footer />

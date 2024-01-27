@@ -108,7 +108,7 @@ export default function Orders(){
                                 <td className="border border-zinc-300 p-2">Price</td>
                                 <td className="border border-zinc-300 p-2">Observations</td>
                                 <td className="border border-zinc-300 p-2">Address</td>
-                                <td className="border border-zinc-300 p-2">Pay Method</td>
+                                { user.role !== "manager" ? <td className="border border-zinc-300 p-2">Pay Method</td> : null }
                                 <td className="border border-zinc-300 p-2">State</td>
                                 <td className="border border-zinc-300 p-2">Items</td>
                                 <td className="border border-zinc-300 p-2">Actions</td>
@@ -132,11 +132,11 @@ export default function Orders(){
                                             <div className="w-full flex justify-center space-x-4">
                                                 { cartData.status === "PENDING" ? <div className="bg-red-500 p-2 rounded w-fit flex items-center space-x-2 hover:bg-red-600 hover:cursor-pointer" onClick={() => { rejectCart(cartData._id); }}>
                                                     <IoMdClose className="w-6 h-6 text-white" />
-                                                    <p className="text-white font-poppins">Cancelar</p>
+                                                    <p className="text-white font-poppins">Reject</p>
                                                 </div> : null }
                                                 { user.role !== "user" && cartData.status === "PENDING" ? <div className="bg-emerald-500 p-2 rounded w-fit flex items-center space-x-2 hover:bg-emerald-600 hover:cursor-pointer" onClick={() => { approveCart(cartData._id); }}>
                                                     <FaCheck className="w-6 h-6 text-white" />
-                                                    <p className="text-white font-poppins">Aceitar</p>
+                                                    <p className="text-white font-poppins">Accept</p>
                                                 </div> : null }
                                                 { user.role === "admin" && cartData.status === "PENDING" ? <div className="bg-emerald-500 p-2 rounded w-fit flex items-center space-x-2 hover:bg-500-600 hover:cursor-pointer" onClick={() => { startEditCart(cartData.id, cartData.allItems, cartData._id, cartData.usersData._id); }}>
                                                     <FaPencilAlt className="w-6 h-6 text-white" />
