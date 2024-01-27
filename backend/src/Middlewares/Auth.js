@@ -9,7 +9,7 @@ export async function BasicAuth(req, res, next){
         return res.status(401).json({
             "message": "Auth Header is missing!",
             "field": "notification",
-            "alertType": 0
+            "code": 0
         });
     }
 
@@ -28,7 +28,7 @@ export async function BasicAuth(req, res, next){
         return res.status(401).json({
             "message": "The user or password are incorrect!",
             "field": "notification",
-            "alertType": 0
+            "code": 0
         });
     }
      
@@ -36,7 +36,7 @@ export async function BasicAuth(req, res, next){
         return res.status(401).json({
             "message": "User is not active!",
             "field": "notification",
-            "alertType": 1
+            "code": 1
         });
     }
 
@@ -46,7 +46,7 @@ export async function BasicAuth(req, res, next){
         return res.status(401).json({
             "message": "The user or password are incorrect!",
             "field": "notification",
-            "alertType": 0
+            "code": 0
         });
     }
     
@@ -58,22 +58,22 @@ export async function Auth(req, res, next){
     const authHeader = req.headers.authorization;
 
     if(!authHeader){
-        return res.status(400).json({ "message": "User not authorized!" });
+        return res.status(400).json({ "message": "User not authorized!", "code": 1 });
     }
 
     const parts = authHeader.split(' ');
     if(parts.length !== 2){
-        return res.status(400).json({ "message": "Authentication Problems!" });
+        return res.status(400).json({ "message": "Authentication Problems!", "code": 1 });
     }
 
     const [ scheme, token ] = parts;
     if(scheme !== "Bearer"){
-        return res.status(400).json({ "message": "Invalid Token Format!" });
+        return res.status(400).json({ "message": "Invalid Token Format!", "code": 1 });
     }
 
     jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
         if(err){
-            return res.status(403).json({ "message": "Token Time Out!" });
+            return res.status(403).json({ "message": "Token Time Out!", "code": 1 });
         }
 
         req.userId = decoded.userId;

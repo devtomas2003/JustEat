@@ -6,7 +6,7 @@ const FoodsSchema = new Schema({
         required: true
     },
     price: {
-        type: 'Number',
+        type: 'String',
         required: true
     },
     photo: {
@@ -23,6 +23,10 @@ const FoodsSchema = new Schema({
     restaurant: {
         type: 'string',
         ref: "Restaurants"
+    },
+    status: {
+        type: 'boolean',
+        default: true
     }
 },
     { timestamps: true }

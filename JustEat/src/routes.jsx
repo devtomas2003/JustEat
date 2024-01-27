@@ -15,6 +15,8 @@ import { UtilsProvider } from "./Contexts/Utils";
 import Notification from "./Components/Notification";
 import AddressDetail from "./Views/User/AddressesDetail";
 import PermissionDetail from "./Views/Admin/PermissionDetail";
+import Foods from "./Views/Restaurant/Foods";
+import FoodDetail from "./Views/Restaurant/FoodDetails";
 
 export default function Router(){
     return (
@@ -37,6 +39,8 @@ export default function Router(){
                         <Route path="/address/:addressId" element={<AddressDetail />} />
                         <Route path="/admin/permissions" element={<ListPermissions />} />
                         <Route path="/admin/permission/:userId" element={<PermissionDetail />} />
+                        <Route path="/foods" element={<Foods />} />
+                        <Route path="/food/:foodId" element={<FoodDetail />} />
                     </Routes>
                     <Notification />
                 </UserProvider>

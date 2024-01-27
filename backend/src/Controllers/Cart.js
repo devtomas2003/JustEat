@@ -35,7 +35,7 @@ export async function SaveCart(req, res){
                 })
             );
 
-            const totalPrice = prices.reduce((acc, price) => acc + price, 0);
+            const totalPrice = prices.reduce((acc, price) => acc + parseFloat(price), 0);
             return totalPrice;
         } catch (error) {
             return res.status(500).json({ "message": "Internal Server Error", "code": 1 });
@@ -195,12 +195,35 @@ export async function UpdateCart(req, res){
         });
     });
 
+    async function calculatePriceToPay() {
+        try {
+            const prices = await Promise.all(
+                foods.map(async (product) => {
+                    try {
+                        const searchFood = await Food.findById(product.id, {
+                            price: true
+                        });
+                        return searchFood.price;
+                    } catch (e) {
+                        return res.status(404).json({ "message": "An Food Id is invalid!", "code": 1 });
+                    }
+                })
+            );
+
+            const totalPrice = prices.reduce((acc, price) => acc + parseFloat(price), 0);
+            return totalPrice;
+        } catch (error) {
+            return res.status(500).json({ "message": "Internal Server Error", "code": 1 });
+        }
+    }
+
     await Cart.updateOne({
         _id: cartId
     }, {
         paymentMethod: paymethod,
         deliveryAddress: address,
-        observations
+        observations,
+        price: await calculatePriceToPay()
     });
 
     res.status(200).json({

@@ -13,7 +13,7 @@ export default function CartItem(props){
                 <p className="font-poppins text-zinc-800 text-lg mt-0.5">{props.cartFood.description}</p>
                 <p className="font-poppins text-zinc-800 mt-0.5">Alergénicos: {props.cartFood.alergy}</p>
                 <div className="bg-[#8C52FF] p-2 text-white w-fit rounded-lg mt-2">
-                    <p className="text-white font-poppins text-lg">€ {parseInt(props.cartFood.price).toFixed(2).toString().replace(".", ",")}</p>
+                    <p className="text-white font-poppins text-lg">€ {parseFloat(props.cartFood.price).toFixed(2).toString().replace(".", ",")}</p>
                 </div>
             </div>
         </div>

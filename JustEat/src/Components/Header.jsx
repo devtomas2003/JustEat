@@ -41,15 +41,36 @@ export default function Header(props){
                     </div>
                 </div>
                 <ul className="mt-8 space-y-2 text-lg font-poppins flex flex-col font-extralight">
-                    <li><Link to="/" className="hover:underline">Home</Link></li>
-                    <li><a href="#restaurants" className="hover:underline">Restaurants</a></li>
-                    <li><Link to="/help" className="hover:underline">Help</Link></li>
-                    <li><Link to="/more" className="hover:underline">Know More</Link></li>
+                    { Object.keys(user).length > 0 ?
+                        <>
+                            { user.role === "user" ?
+                            <>
+                                <li><Link to="/" className="hover:underline">Restaurants</Link></li>
+                                <li><Link to="/orders" className="hover:underline">My Orders</Link></li>
+                                <li><Link to="/addresses" className="hover:underline">Addresses</Link></li>
+                            </> : user.role === "manager" ?
+                            <>
+                                <li><Link to="/restaurant/orders" className="hover:underline">My Requests</Link></li>
+                                <li><Link to="/restaurant/overview" className="hover:underline">My Restaurant</Link></li>
+                                <li><Link to="/foods" className="hover:underline">Foods</Link></li>
+                            </> : user.role === "admin" ?
+                            <>
+                                <li><Link to="/admin/restaurants" className="hover:underline">Restaurants</Link></li>
+                                <li><Link to="/restaurant/orders" className="hover:underline">Requests</Link></li>
+                                <li><Link to="/admin/permissions" className="hover:underline">Permissions</Link></li>
+                            </> : null }
+                        </> :
+                        <>
+                            <li><Link to="/" className="hover:underline">Home</Link></li>
+                            <li><a href="#restaurants" className="hover:underline">Restaurants</a></li>
+                            <li><Link to="/help" className="hover:underline">Help</Link></li>
+                            <li><Link to="/more" className="hover:underline">Know More</Link></li>
+                        </> }
                 </ul>
-                <div className="flex bg-slate-100 hover:bg-slate-200 hover:cursor-pointer p-2 items-center space-x-2 rounded w-fit mt-5" onClick={() => { props.openCart(true); }}>
+                { user.role === "user" || localStorage.getItem("@justeat/isEditing") ? <div className="flex bg-slate-100 hover:bg-slate-200 hover:cursor-pointer p-2 items-center space-x-2 rounded w-fit mt-5" onClick={() => { props.openCart(true); }}>
                     <FaCartShopping className="w-6 h-6 text-[#8C52FF]" />
-                    <p className="font-poppins text-[#8C52FF]">2 Itens</p>
-                </div>
+                    <p className="font-poppins text-[#8C52FF]">{userCart.length + " " +  (userCart.length === 1 ? "Item" : "Itens")}</p>
+                </div> : null }
                 <div className="flex flex-col font-poppins space-y-4 mt-8">
                     <Link to="/" className="border-b-2 font-bold border-[#8C52FF] w-fit">Sign In</Link>
                     <Link to="/signup" className="bg-white shadow p-3 rounded-xl border flex items-center justify-center font-bold text-[#8C52FF]">Create Account</Link>
@@ -61,20 +82,21 @@ export default function Header(props){
                         <div className="lg:hidden hover:cursor-pointer" onClick={() => { setIsMobileMenuOpen(true); }}>
                             <GiHamburgerMenu className="text-zinc-800 w-8 h-8" />
                         </div>
-                        <img src="/logo.svg" title="JustEat" alt="JustEat" className="lg:w-52 w-32" onClick={()=>{ navigate('/'); }}/>
+                        <img src="/logo.svg" title="JustEat" alt="JustEat" className="lg:w-52 w-32" onClick={()=>{ user.role === "user" ? navigate('/') : (user.role === "manager") ? navigate("/restaurant/overview") : navigate("/admin/restaurants") }}/>
                     </div>
                     <ul className="ml-24 space-x-8 text-lg font-poppins lg:flex hidden font-extralight">
                         { Object.keys(user).length > 0 ?
                         <>
                             { user.role === "user" ?
                             <>
-                                <li><a href="#restaurants" className="hover:underline">Restaurants</a></li>
+                                <li><Link to="/" className="hover:underline">Restaurants</Link></li>
                                 <li><Link to="/orders" className="hover:underline">My Orders</Link></li>
                                 <li><Link to="/addresses" className="hover:underline">Addresses</Link></li>
                             </> : user.role === "manager" ?
                             <>
                                 <li><Link to="/restaurant/orders" className="hover:underline">My Requests</Link></li>
                                 <li><Link to="/restaurant/overview" className="hover:underline">My Restaurant</Link></li>
+                                <li><Link to="/foods" className="hover:underline">Foods</Link></li>
                             </> : user.role === "admin" ?
                             <>
                                 <li><Link to="/admin/restaurants" className="hover:underline">Restaurants</Link></li>

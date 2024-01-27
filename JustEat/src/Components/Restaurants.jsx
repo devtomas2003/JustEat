@@ -1,17 +1,22 @@
 import { useEffect, useState } from "react";
 import RestaurantCard from "./RestaurantCard";
 import api from "../services/api";
+import { useUtils } from "../Contexts/Utils";
 
 export default function Restaurants(){
     const [listRestaurants, setListRestaurants] = useState([]);
+    const [listRestaurantsFiltered, setListRestaurantsFiltered] = useState([]);
+    const [searchText, setSearchText] = useState('');
+    const { showNotification } = useUtils();
 
     useEffect(() => {
         async function loadRestaurants(){
             navigator.geolocation.getCurrentPosition((geoCords) => {
                 api.get(`/restaurants?lat=${geoCords.coords.latitude}&long=${geoCords.coords.longitude}`).then((respRest) => {
                     setListRestaurants(respRest.data);
-                }).catch(() => {
-                    alert("API Error!");
+                    setListRestaurantsFiltered(respRest.data);
+                }).catch((errorResp) => {
+                    showNotification(errorResp.response.data.message, errorResp.response.data.code);
                 })
             }, (e) => {
                 
@@ -20,12 +25,18 @@ export default function Restaurants(){
         loadRestaurants();
     }, []);
 
+    useEffect(() => {
+        const filteredText = listRestaurants.filter((restaurantInfo) => restaurantInfo.name.toLowerCase().includes(searchText.toLowerCase()));
+        setListRestaurantsFiltered(filteredText);
+    }, [searchText]);
+
     return (
         <div className="p-8" id="restaurants">
             <h1 className="font-poppins text-xl text-zinc-800">Restaurants</h1>
-            { listRestaurants.length > 0 ?
+            <input type="text" placeholder="Search for a Restaurant" className="p-2 border w-full mt-2 outline-none" value={searchText} onChange={(e) => { setSearchText(e.target.value); }} />
+            { listRestaurantsFiltered.length > 0 ?
             <div className="mt-4 grid lg:grid-cols-5 gap-4">
-                { listRestaurants.map((restaurant) => {
+                { listRestaurantsFiltered.map((restaurant) => {
                     return (
                         <RestaurantCard key={restaurant._id} restaurant={restaurant} />
                     );

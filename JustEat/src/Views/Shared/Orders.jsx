@@ -9,7 +9,7 @@ import { useUtils } from "../../Contexts/Utils";
 
 export default function Orders(){
 
-    const { getUserInfo, user, setUserCart, userCart } = useUser();
+    const { getUserInfo, user, setUserCart } = useUser();
     const { showNotification } = useUtils();
     const [carts, setCarts] = useState([]);
     const [cartsFiltered, setCartsFiltered] = useState([]);

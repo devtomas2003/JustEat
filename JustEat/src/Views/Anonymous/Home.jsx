@@ -48,7 +48,7 @@ export default function Home(){
         }).catch((err) => {
             const errData = err.response.data;
             if(errData.field === "notification"){
-                showNotification(errData.message, errData.alertType);
+                showNotification(errData.message, errData.code);
             }else{
                 setError(errData.field, {
                     message: errData.message

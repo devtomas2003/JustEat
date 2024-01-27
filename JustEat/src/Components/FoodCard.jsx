@@ -34,7 +34,7 @@ export default function FoodCard(props){
                 <p className="font-poppins text-zinc-800 mt-0.5">Alergénicos: {props.food.alergy}</p>
                 <div className="flex items-center justify-between">
                     <div className="bg-[#8C52FF] p-2 text-white w-fit rounded-lg mt-2">
-                        <p className="text-white font-poppins text-lg">€ {parseInt(props.food.price).toFixed(2).toString().replace(".", ",")}</p>
+                        <p className="text-white font-poppins text-lg">€ {parseFloat(props.food.price).toFixed(2).toString().replace(".", ",")}</p>
                     </div>
                     <BsFillCartPlusFill className="w-8 h-8 text-zinc-700" onClick={() => { addCard(props.food._id); }} />
                 </div>

@@ -6,7 +6,7 @@ import Footer from "../../Components/Footer";
 import CartOverview from "../../Components/CartOverview";
 import { useEffect, useState } from "react";
 import { useUser } from "../../Contexts/User";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../../services/api";
 import { IMAGES_SERVER } from "../../services/env";
 
@@ -16,6 +16,7 @@ export default function Restaurant(){
     const [foods, setFoods] = useState([]);
     const { slug } = useParams();
     const { getUserInfo } = useUser();
+    const navigate = useNavigate();
 
     useEffect(() => {
         getUserInfo();
@@ -61,8 +62,19 @@ export default function Restaurant(){
         return true;
     }
 
+    function exitEditMode(){
+        localStorage.removeItem("@justeat/cart");
+        localStorage.removeItem("@justeat/isEditing");
+        localStorage.removeItem("@justeat/userId");
+        navigate("/admin/restaurants");
+    }
+
     return (
         <div className="absolute w-full h-full flex flex-col">
+            { localStorage.getItem("@justeat/isEditing") ? <div className="bg-yellow-600 p-1 flex justify-center space-x-2">
+                <h1 className="text-white font-poppins">In Editing Mode!</h1>
+                <a onClick={() => { exitEditMode(); }} className="text-white hover:underline">Exit mode</a>
+            </div> : null }
             { showCart ? <CartOverview closeCart={setShowCart} /> : null }
             { Object.keys(restaurant).length > 0 ?
             <div className="flex flex-col min-w-full min-h-full">

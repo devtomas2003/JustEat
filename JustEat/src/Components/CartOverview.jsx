@@ -40,13 +40,13 @@ export default function CartOverview(props){
                 api.get('/addresses/' + localStorage.getItem("@justeat/userId")).then((respAddress) => {
                     setAddressesList(respAddress.data);
                 }).catch((err) => {
-    
+                    showNotification(err.reponse.data.message, err.reponse.data.code);
                 });
             }else{
                 api.get('/addresses').then((respAddress) => {
                     setAddressesList(respAddress.data);
                 }).catch((err) => {
-    
+                    showNotification(err.reponse.data.message, err.reponse.data.code);
                 });
             }
         }    
@@ -75,7 +75,7 @@ export default function CartOverview(props){
 
     function calculatePriceToPay(){
         return localItemsUser.reduce((total, product) => {
-            return total + product.food.price;
+            return total + parseFloat(product.food.price);
         }, 0);
     }
 
@@ -121,7 +121,8 @@ export default function CartOverview(props){
                     setCartStep(2);
                     showNotification(respCart.data.message, respCart.data.code);
                     localStorage.removeItem("@justeat/cart");
-                    localStorage.removeItem("@justeat/userId")
+                    localStorage.removeItem("@justeat/isEditing");
+                    localStorage.removeItem("@justeat/userId");
                     setUserCart([]);
                 }).catch((err) => {
                     showNotification(err.reponse.data.message, err.reponse.data.code);

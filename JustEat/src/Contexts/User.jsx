@@ -32,6 +32,7 @@ export const UserProvider = ({ children }) => {
     function makeLogout(){
         setUserInfo({});
         localStorage.removeItem("@justeat/auth");
+        navigate("/");
     }
 
     return (
