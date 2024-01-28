@@ -1,20 +1,15 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Header from "../../Components/Header";
-import { useUser } from "../../Contexts/User";
 import api from "../../services/api";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { IoIosAddCircle, IoMdClose } from "react-icons/io";
 import { FaPencilAlt } from "react-icons/fa";
 
 export default function Addresses(){
-
-    const { getUserInfo } = useUser();
     const [addresses, setAddresses] = useState([]);
     const navigate = useNavigate();
     
     useEffect(() => {
-        getUserInfo();
-
         async function loadAddresses(){
             const addressesData = await api.get('/addresses');
             setAddresses(addressesData.data);
@@ -50,6 +45,7 @@ export default function Addresses(){
                             </tr>
                         </thead>
                         <tbody>
+                            { addresses.length > 0 ? <Fragment>
                             { addresses.map((addressesData) => {
                                 return (
                                     <tr key={addressesData._id}>
@@ -70,6 +66,11 @@ export default function Addresses(){
                                     </tr>
                                 );
                             }) }
+                            </Fragment> : 
+                                <tr className="text-center">
+                                    <td colSpan={3} className="border border-zinc-300 p-2">No Addresses!</td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>

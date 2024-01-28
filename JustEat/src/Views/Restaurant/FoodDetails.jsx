@@ -2,15 +2,14 @@ import Header from "../../Components/Header";
 import { FaRegSave } from "react-icons/fa";
 import { MdAddPhotoAlternate } from "react-icons/md";
 import Footer from "../../Components/Footer";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import api from "../../services/api";
-import { useUser } from "../../Contexts/User";
 import { IMAGES_SERVER } from "../../services/env";
 import { useUtils } from "../../Contexts/Utils";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const submitFoodForm = z.object({
     name: z.string().min(1, 'The name is required!'),
@@ -20,7 +19,7 @@ const submitFoodForm = z.object({
 });
 
 export default function FoodDetail(){
-    const { getUserInfo } = useUser();
+    const navigate = useNavigate();
     const { showNotification } = useUtils();
     let { foodId } = useParams();
 
@@ -52,19 +51,20 @@ export default function FoodDetail(){
                     doUpload(foodId);
                 }).catch((errorResp) => {
                     showNotification(errorResp.response.data.message, errorResp.response.data.code);
+                    navigate("/restaurant/foods");
                 })
             }
         }
     }
 
     useEffect(() => {
-        getUserInfo();
-
         async function loadFood(){
             api.get('/food/' + foodId).then((foodData) => {
                 const restData = foodData.data;
                 loadData(restData);
-            });
+            }).catch((errorResp) => {
+                showNotification(errorResp.response.data.message, errorResp.response.data.code);
+            })
         }
         if(foodId !== "new"){
             loadFood();

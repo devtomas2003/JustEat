@@ -1,17 +1,14 @@
 import { useEffect, useState } from "react";
 import Header from "../../Components/Header";
 import api from "../../services/api";
-import { useUser } from "../../Contexts/User";
 import { FaPencilAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 export default function ListPermissions(){
-    const { getUserInfo } = useUser();
     const [allUsers, setAllUsers] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
-        getUserInfo();
         function getAllUserList(){
             api.get('/users').then((usersData) => {
                 setAllUsers(usersData.data);

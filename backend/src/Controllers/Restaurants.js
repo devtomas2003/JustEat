@@ -167,8 +167,12 @@ export async function GetRestaurant(req, res) {
                 foods
             });
         })
+    }).catch(() => {
+        res.status(404).json({
+            "message": "Restaurant not found!",
+            "code": 1
+        });
     });
-
 }
 
 export async function GetMyRestaurant(req, res){
@@ -193,7 +197,7 @@ export async function GetMyRestaurant(req, res){
     }
 
     
-    const restaurant = await Restaurants.findById(restaurantId, {
+    Restaurants.findById(restaurantId, {
         name: true,
         vat: true,
         openingTime: true,
@@ -207,9 +211,14 @@ export async function GetMyRestaurant(req, res){
         phone: true,
         email: true,
         photo: true
+    }).then((restaurant) => {
+        res.status(200).json(restaurant);
+    }).catch(() => {
+        res.status(400).json({
+            "message": "Restaurant not found!",
+            "code": 1
+        });
     });
-
-    res.status(200).json(restaurant);
 }
 
 export async function UpdateRestaurant(req, res){

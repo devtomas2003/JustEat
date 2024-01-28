@@ -27,8 +27,7 @@ const submitRestaurantForm = z.object({
 });
 
 export default function RestaurantDetail(props){
-
-    const { getUserInfo, user } = useUser();
+    const { user } = useUser();
     const { showNotification } = useUtils();
     let { slug } = useParams();
     const navigate = useNavigate();
@@ -90,14 +89,15 @@ export default function RestaurantDetail(props){
     }
 
     useEffect(() => {
-        getUserInfo();
-
         async function loadRestaurant(){
             if(!props.isOwn){
                 api.get('/restaurantOverview?editedEntity=' + slug).then((restaurantData) => {
                     const restData = restaurantData.data;
                     loadData(restData);
-                });
+                }).catch((errorResp) => {
+                    showNotification(errorResp.response.data.message, errorResp.response.data.code);
+                    navigate("/admin/restaurants");
+                })
             }else{
                 api.get('/myRestaurant').then((restaurantData) => {
                     const restData = restaurantData.data;

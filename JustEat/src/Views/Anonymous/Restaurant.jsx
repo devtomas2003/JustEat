@@ -5,26 +5,27 @@ import FoodCard from "../../Components/FoodCard";
 import Footer from "../../Components/Footer";
 import CartOverview from "../../Components/CartOverview";
 import { useEffect, useState } from "react";
-import { useUser } from "../../Contexts/User";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../services/api";
 import { IMAGES_SERVER } from "../../services/env";
+import { useUtils } from "../../Contexts/Utils";
 
 export default function Restaurant(){
     const [showCart, setShowCart] = useState(false);
     const [restaurant, setRestaurant] = useState({});
     const [foods, setFoods] = useState([]);
     const { slug } = useParams();
-    const { getUserInfo } = useUser();
+    const { showNotification } = useUtils();
     const navigate = useNavigate();
 
     useEffect(() => {
-        getUserInfo();
-
         async function loadRestaurant(){
             api.get("/restaurant/" + slug).then((restaurantInfo) => {
                 setRestaurant(restaurantInfo.data.restaurant);
                 setFoods(restaurantInfo.data.foods);
+            }).catch((errorResp) => {
+                showNotification(errorResp.response.data.message, errorResp.response.data.code);
+                navigate("/");
             })
         }
 

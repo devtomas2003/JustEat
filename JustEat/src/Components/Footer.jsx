@@ -8,7 +8,6 @@ export default function Footer(){
                 <p className="lg:text-base text-xs font-poppins font-semibold text-white">{new Date().getFullYear()} © JustEat. All rights reserved!</p>
                 <div className="flex lg:text-base text-xs text-white font-poppins space-x-4">
                     <Link className="hover:underline" to="/help">Help</Link>
-                    <Link className="hover:underline" to="/more">Know More</Link>
                     <Link className="hover:underline" to="/policys">Terms and conditions</Link>
                 </div>
             </div>

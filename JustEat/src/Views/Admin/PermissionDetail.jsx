@@ -3,13 +3,10 @@ import { FaRegSave } from "react-icons/fa";
 import Footer from "../../Components/Footer";
 import { useEffect, useState } from "react";
 import api from "../../services/api";
-import { useUser } from "../../Contexts/User";
 import { useUtils } from "../../Contexts/Utils";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function PermissionDetail(){
-
-    const { getUserInfo } = useUser();
     const { showNotification } = useUtils();
     let { userId } = useParams();
     const navigate = useNavigate();
@@ -37,8 +34,6 @@ export default function PermissionDetail(){
     }
 
     useEffect(() => {
-        getUserInfo();
-
         async function loadPermission(){
             api.get('/permission?userId=' + userId).then((addressData) => {
                 const restData = addressData.data;
@@ -47,6 +42,9 @@ export default function PermissionDetail(){
                     entityConnected: restData.entityConnected,
                     nome: restData.nome
                 });
+            }).catch((err) => {
+                showNotification(err.response.data.message, err.response.data.code);
+                navigate("/admin/permissions");
             });
 
             api.get('/restaurantsName').then((names) => {

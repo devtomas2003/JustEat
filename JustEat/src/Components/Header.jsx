@@ -64,7 +64,7 @@ export default function Header(props){
                             <li><Link to="/" className="hover:underline">Home</Link></li>
                             <li><a href="#restaurants" className="hover:underline">Restaurants</a></li>
                             <li><Link to="/help" className="hover:underline">Help</Link></li>
-                            <li><Link to="/more" className="hover:underline">Know More</Link></li>
+                            <li><Link to="/policys" className="hover:underline">Legal</Link></li>
                         </> }
                 </ul>
                 { user.role === "user" || localStorage.getItem("@justeat/isEditing") ? <div className="flex bg-slate-100 hover:bg-slate-200 hover:cursor-pointer p-2 items-center space-x-2 rounded w-fit mt-5" onClick={() => { props.openCart(true); }}>
@@ -96,11 +96,11 @@ export default function Header(props){
                             <>
                                 <li><Link to="/restaurant/orders" className="hover:underline">My Requests</Link></li>
                                 <li><Link to="/restaurant/overview" className="hover:underline">My Restaurant</Link></li>
-                                <li><Link to="/foods" className="hover:underline">Foods</Link></li>
+                                <li><Link to="/restaurant/foods" className="hover:underline">Foods</Link></li>
                             </> : user.role === "admin" ?
                             <>
                                 <li><Link to="/admin/restaurants" className="hover:underline">Restaurants</Link></li>
-                                <li><Link to="/restaurant/orders" className="hover:underline">Requests</Link></li>
+                                <li><Link to="/admin/orders" className="hover:underline">Requests</Link></li>
                                 <li><Link to="/admin/permissions" className="hover:underline">Permissions</Link></li>
                             </> : null }
                         </> :
@@ -108,7 +108,7 @@ export default function Header(props){
                             <li><Link to="/" className="hover:underline">Home</Link></li>
                             <li><a href="#restaurants" className="hover:underline">Restaurants</a></li>
                             <li><Link to="/help" className="hover:underline">Help</Link></li>
-                            <li><Link to="/more" className="hover:underline">Know More</Link></li>
+                            <li><Link to="/policys" className="hover:underline">Legal</Link></li>
                         </> }
                     </ul>
                 </div>

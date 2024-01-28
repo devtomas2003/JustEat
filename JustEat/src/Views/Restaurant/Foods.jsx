@@ -2,23 +2,18 @@ import { IoIosAddCircle, IoMdClose } from "react-icons/io";
 import Header from "../../Components/Header";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useUser } from "../../Contexts/User";
 import api from "../../services/api";
 import { FaPencilAlt } from "react-icons/fa";
 import { IMAGES_SERVER } from "../../services/env";
 import { useUtils } from "../../Contexts/Utils";
 
 export default function Foods(){
-
     const [foods, setFoods] = useState([]);
 
-    const { getUserInfo } = useUser();
     const { showNotification } = useUtils();
     const navigate = useNavigate();
     
     useEffect(() => {
-        getUserInfo();
-
         async function GetListAllFoods(){
             api.get('/foods').then((foodsList) => {
                 setFoods(foodsList.data);
@@ -47,7 +42,7 @@ export default function Foods(){
                     <div className="mt-6">
                     <div className="flex items-center justify-between">
                         <h1 className="font-poppins text-zinc-800 text-xl font-semibold">List of Foods</h1>
-                        <div className="hover:cursor-pointer group" title="Add Food" onClick={() => { navigate("/food/new"); }}>
+                        <div className="hover:cursor-pointer group" title="Add Food" onClick={() => { navigate("/restaurant/food/new"); }}>
                             <IoIosAddCircle className="w-10 h-10 text-emerald-600 group-hover:text-emerald-700" />
                         </div>
                     </div>
@@ -71,7 +66,7 @@ export default function Foods(){
                                         <td className="text-center border border-zinc-300 p-2">{foodData.description}</td>
                                         <td className="border border-zinc-300 p-2">
                                             <div className="w-full flex justify-center space-x-4">
-                                                <div className="bg-emerald-500 p-2 rounded w-fit flex items-center space-x-2 hover:bg-500-600 hover:cursor-pointer" onClick={() => { navigate("/food/" + foodData._id); }}>
+                                                <div className="bg-emerald-500 p-2 rounded w-fit flex items-center space-x-2 hover:bg-500-600 hover:cursor-pointer" onClick={() => { navigate("/restaurant/food/" + foodData._id); }}>
                                                     <FaPencilAlt className="w-6 h-6 text-white" />
                                                     <p className="text-white font-poppins">Edit</p>
                                                 </div>

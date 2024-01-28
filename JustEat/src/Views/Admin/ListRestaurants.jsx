@@ -4,16 +4,13 @@ import RestaurantCard from "../../Components/RestaurantCard";
 
 import { IoIosAddCircle } from "react-icons/io";
 import api from "../../services/api";
-import { useUser } from "../../Contexts/User";
 import { useNavigate } from "react-router-dom";
 
 export default function ListRestaurants(){
-    const { getUserInfo } = useUser();
     const navigate = useNavigate();
     const [allRestaurants, setAllRestaurants] = useState([]);
 
     useEffect(() => {
-        getUserInfo();
         function getAllRestaurants(){
             api.get('/allRestaurants').then((restaurantsData) => {
                 setAllRestaurants(restaurantsData.data);

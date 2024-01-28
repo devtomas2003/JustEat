@@ -19,7 +19,7 @@ const submitProfileForm = z.object({
 });
 
 export default function Profile(){
-    const { getUserInfo, user, setUserInfo } = useUser();
+    const { user, setUserInfo } = useUser();
     const { showNotification } = useUtils();
 
     const [imgUpload, setImageUpload] = useState();
@@ -43,8 +43,6 @@ export default function Profile(){
     }
 
     useEffect(() => {
-        getUserInfo();
-
         async function loadProfile(){
             api.get('/profile').then((profileData) => {
                 const restData = profileData.data;

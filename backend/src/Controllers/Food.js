@@ -56,14 +56,19 @@ export async function GetAllFoods(req, res){
         entityConnected: true
     });
 
-    const findFoods = await Food.find({ restaurant: userData.entityConnected, status: true }, {
+    Food.find({ restaurant: userData.entityConnected, status: true }, {
         description: true,
         name: true,
         photo: true,
         price: true
+    }).then((findFoods) => {
+        res.status(200).json(findFoods);
+    }).catch(() => {
+        res.status(404).json({
+            "message": "Food not found!",
+            "code": 1
+        });
     });
-
-    res.status(200).json(findFoods);
 }
 
 export async function UploadFoodImage(req, res){

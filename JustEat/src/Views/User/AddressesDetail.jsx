@@ -6,9 +6,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import api from "../../services/api";
-import { useUser } from "../../Contexts/User";
 import { useUtils } from "../../Contexts/Utils";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const submitAddressForm = z.object({
     addressLineOne: z.string().min(1, 'The Address Line One is required!'),
@@ -16,10 +15,9 @@ const submitAddressForm = z.object({
 });
 
 export default function AddressDetail(){
-
-    const { getUserInfo } = useUser();
     const { showNotification } = useUtils();
     let { addressId } = useParams();
+    const navigate = useNavigate();
 
     const { register, handleSubmit, formState: { errors }, setError, setValue } = useForm({
         resolver: zodResolver(submitAddressForm),
@@ -49,15 +47,17 @@ export default function AddressDetail(){
     }
 
     useEffect(() => {
-        getUserInfo();
-
         async function loadAddress(){
             if(addressId !== "new"){
                 api.get('/address?addressId=' + addressId).then((addressData) => {
                     const restData = addressData.data;
                     setValue('addressLineOne', restData.addressLineOne);
                     setValue('addressLineTwo', restData.addressLineTwo);
-                });
+                }).catch((err) => {
+                    const respData = err.response.data;
+                    showNotification(respData.message, respData.code);
+                    navigate("/addresses");
+                })
             }
         }
         loadAddress();

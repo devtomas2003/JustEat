@@ -8,17 +8,12 @@ import { FaCheck, FaPencilAlt } from "react-icons/fa";
 import { useUtils } from "../../Contexts/Utils";
 
 export default function Orders(){
-
-    const { getUserInfo, user, setUserCart } = useUser();
+    const { user, setUserCart } = useUser();
     const { showNotification } = useUtils();
     const [carts, setCarts] = useState([]);
     const [cartsFiltered, setCartsFiltered] = useState([]);
     const [searchText, setSearchText] = useState('');
     const navigate = useNavigate();
-    
-    useEffect(() => {
-        getUserInfo();
-    }, []);
 
     useEffect(() => {
         async function loadCarts(){
