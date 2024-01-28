@@ -1,6 +1,7 @@
 import multerS3 from "multer-s3";
 import crypto from "crypto";
 import aws from "aws-sdk";
+import "dotenv/config";
 import AWSCredentials from "../aws-env";
 
 aws.config.update({

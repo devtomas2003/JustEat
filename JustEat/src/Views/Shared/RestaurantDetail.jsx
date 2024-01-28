@@ -23,12 +23,22 @@ const submitRestaurantForm = z.object({
     longitude: z.string().min(1, 'The Longitude is required!'),
     email: z.string().email('The email address is not valid!'),
     phone: z.string().min(9, 'The Phone Number is required!'),
-    description: z.string().min(10, 'A small description is required!')
+    description: z.string().min(10, 'A small description is required!'),
+    stars: z.string().nullable()
+}).refine((data) => {
+    if(isNaN(data.stars) || parseInt(data.stars) > 5 || parseInt(data.stars) < 0){
+        return false;
+    }else{
+        return true;
+    }
+}, {
+    message: "Rating need to have a number between 0 and 5.",
+    path: ["stars"]
 });
 
 export default function RestaurantDetail(props){
     const { user } = useUser();
-    const { showNotification } = useUtils();
+    const { showNotification, setLoading } = useUtils();
     let { slug } = useParams();
     const navigate = useNavigate();
 
@@ -45,6 +55,7 @@ export default function RestaurantDetail(props){
         if(selectedRestDays.length === 7){
             showNotification("The Restaurant need to be opened at least 1 day!", 1);
         }else{
+            setLoading(true);
             if(slug !== "new" || props.isOwn){
                 const path = props.isOwn ? "own" : slug;
                 api.put('/updateRestaurant/' + path, {
@@ -56,6 +67,7 @@ export default function RestaurantDetail(props){
                     addressLineOne: restaurantData.addressLineOne,
                     addressLineTwo: restaurantData.addressLineTwo,
                     openingTime: restaurantData.openTime,
+                    stars: restaurantData.stars,
                     closedTime: restaurantData.closeTime,
                     latitude: restaurantData.latitude,
                     restDays: selectedRestDays,
@@ -75,6 +87,7 @@ export default function RestaurantDetail(props){
                     addressLineOne: restaurantData.addressLineOne,
                     addressLineTwo: restaurantData.addressLineTwo,
                     openingTime: restaurantData.openTime,
+                    stars: restaurantData.stars,
                     closedTime: restaurantData.closeTime,
                     latitude: restaurantData.latitude,
                     restDays: selectedRestDays,
@@ -85,6 +98,7 @@ export default function RestaurantDetail(props){
                     showNotification(errorResp.response.data.message, errorResp.response.data.code);
                 })
             }
+            setLoading(false);
         }
     }
 
@@ -118,6 +132,7 @@ export default function RestaurantDetail(props){
         setValue('phone', restData.phone.toString());
         setValue('email', restData.email);
         setValue('latitude', restData.latitude);
+        setValue('stars', restData.stars);
         setValue('longitude', restData.longitude);
         setValue('description', restData.observations);
         setValue('openTime', new Date(restData.openingTime).getHours().toString().padStart(2, "0") + ":" + new Date(restData.openingTime).getMinutes().toString().padStart(2, "0"));
@@ -151,6 +166,7 @@ export default function RestaurantDetail(props){
     }
 
     function doUpload(){
+        setLoading(true);
         const formData = new FormData();
         formData.append("file", imgUpload);
         const path = props.isOwn ? "own" : slug;
@@ -168,6 +184,7 @@ export default function RestaurantDetail(props){
         }).catch((errorResp) => {
             showNotification(errorResp.response.data.message, errorResp.response.data.code);
         });
+        setLoading(false);
     }
 
     return (
@@ -229,6 +246,13 @@ export default function RestaurantDetail(props){
                                             </select>
                                         </div>
                                     </div>
+                                    { user.role === "admin" ? <div className="bg-slate-100 h-full p-2 flex flex-col rounded">
+                                        <div className="flex space-x-2 h-full">
+                                            <label className="w-36 font-poppins text-zinc-700">Rating</label>
+                                            <textarea type="text" className="w-full h-full bg-transparent outline-none" placeholder="Be good!" {...register('stars')} />
+                                        </div>
+                                        { errors.stars ? <p className="text-red-600 font-poppins mt-0.5">{errors.stars.message}</p> : null }
+                                    </div> : null }
                                 </div>
                                 <div className="w-full flex flex-col space-y-2">
                                     <div className="bg-slate-100 p-2 rounded">
@@ -274,6 +298,7 @@ export default function RestaurantDetail(props){
                                         { errors.description ? <p className="text-red-600 font-poppins mt-0.5">{errors.description.message}</p> : null }
                                     </div>
                                 </div>
+                                
                             </div>
                             <div className="w-full flex justify-end mt-4 space-x-2">
                                 { slug !== "new" && user.role === "admin" ? <button className="p-2 rounded bg-red-600 hover:bg-red-700 flex items-center space-x-1" type="button" onClick={() => { deleteRestaurant(); }}>

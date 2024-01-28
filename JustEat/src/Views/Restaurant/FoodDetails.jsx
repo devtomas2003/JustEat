@@ -20,7 +20,7 @@ const submitFoodForm = z.object({
 
 export default function FoodDetail(){
     const navigate = useNavigate();
-    const { showNotification } = useUtils();
+    const { showNotification, setLoading } = useUtils();
     let { foodId } = useParams();
 
     const [imgUpload, setImageUpload] = useState();
@@ -84,6 +84,7 @@ export default function FoodDetail(){
     }
 
     function doUpload(from){
+        setLoading(true);
         const path = from === "auto" && foodId !== "new" ? foodId : from;
         const formData = new FormData();
         formData.append("file", imgUpload);
@@ -101,6 +102,7 @@ export default function FoodDetail(){
         }).catch((errorResp) => {
             showNotification(errorResp.response.data.message, errorResp.response.data.code);
         });
+        setLoading(false);
     }
 
     return (

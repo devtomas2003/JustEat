@@ -20,7 +20,7 @@ const submitProfileForm = z.object({
 
 export default function Profile(){
     const { user, setUserInfo } = useUser();
-    const { showNotification } = useUtils();
+    const { showNotification, setLoading } = useUtils();
 
     const [imgUpload, setImageUpload] = useState();
     const [imageName, setImageName] = useState('');
@@ -62,6 +62,7 @@ export default function Profile(){
 
 
     function doUpload(){
+        setLoading(true);
         const formData = new FormData();
         formData.append("file", imgUpload);
 
@@ -79,6 +80,7 @@ export default function Profile(){
         }).catch((errorResp) => {
             showNotification(errorResp.response.data.message, errorResp.response.data.code);
         });
+        setLoading(false);
     }
 
     return (

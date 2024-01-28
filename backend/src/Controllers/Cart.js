@@ -158,7 +158,8 @@ export async function GetCartMetadata(req, res){
 
     Cart.findById(cartId, {
         deliveryAddress: true,
-        paymentMethod: true
+        paymentMethod: true,
+        observations: true
     }).then(async (cartData) => {
         res.status(200).json(cartData);
     }).catch((err) => {
@@ -222,7 +223,7 @@ export async function UpdateCart(req, res){
     }, {
         paymentMethod: paymethod,
         deliveryAddress: address,
-        observations,
+        observations: observations || 'N/A',
         price: await calculatePriceToPay()
     });
 

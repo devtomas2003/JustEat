@@ -17,6 +17,11 @@ export const UserProvider = ({ children }) => {
                 }
             }).then((userInfo) => {
                 setUserInfo(userInfo.data);
+                if(userInfo.data.role === "admin"){
+                    navigate("/admin/restaurants");
+                }else if(userInfo.data.role === "manager"){
+                    navigate("/restaurant/overview");
+                }
             }).catch(() => {
                 localStorage.removeItem("@justeat/auth");
                 navigate("/");

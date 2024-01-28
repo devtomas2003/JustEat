@@ -32,7 +32,7 @@ export async function GetRestaurants(req, res){
 
     allActiveRestaurants.forEach((restaurant) => {
         const calDist = calcCrow(lat, long, restaurant.latitude, restaurant.longitude);
-        if(calDist <= 25){
+        if(calDist <= 5){
             restaurantsNearBy.push(restaurant);
         }
     });
@@ -68,10 +68,11 @@ export async function CreateRestaurant(req, res){
     const openingTime = req.body.openingTime;
     const closedTime = req.body.closedTime;
     const latitude = req.body.latitude;
+    const stars = req.body.stars;
     const restDays = req.body.restDays;
     const longitude = req.body.longitude;
 
-    if(!name || !email || !vat || !phone || !addressLineOne || !addressLineTwo || !openingTime || !closedTime || !latitude || !restDays || !longitude){
+    if(!name || !email || !vat || !phone || !addressLineOne || !addressLineTwo || !openingTime || !closedTime || !latitude || !restDays || !stars || !longitude){
         return res.status(400).json({
             "message": "Missing fields! See API documentation"
         });
@@ -92,6 +93,13 @@ export async function CreateRestaurant(req, res){
     if(phone.toString().length !== 9){
         return res.status(400).json({
             "message": "The Phone Number is invalid!"
+        });
+    }
+
+    if(isNaN(stars) || parseInt(stars) > 5 || parseInt(stars) < 0){
+        return res.status(400).json({
+            "message": "Rating need to have a number between 0 and 5.",
+            "code": 1
         });
     }
 
@@ -127,7 +135,8 @@ export async function CreateRestaurant(req, res){
         closedTime: closingTimeDate,
         latitude,
         longitude,
-        restDays
+        restDays,
+        stars
     });
 
     res.status(200).json({
@@ -210,7 +219,8 @@ export async function GetMyRestaurant(req, res){
         observations: true,
         phone: true,
         email: true,
-        photo: true
+        photo: true,
+        stars: true
     }).then((restaurant) => {
         res.status(200).json(restaurant);
     }).catch(() => {
@@ -240,9 +250,10 @@ export async function UpdateRestaurant(req, res){
     const closedTime = req.body.closedTime;
     const latitude = req.body.latitude;
     const restDays = req.body.restDays;
+    const stars = req.body.stars;
     const longitude = req.body.longitude;
 
-    if(!restaurantId || !name || !email || !vat || !phone || !addressLineOne || !addressLineTwo || !openingTime || !closedTime || !latitude || !restDays || !longitude){
+    if(!restaurantId || !name || !email || !vat || !stars || !phone || !addressLineOne || !addressLineTwo || !openingTime || !closedTime || !latitude || !restDays || !longitude){
         return res.status(400).json({
             "message": "Missing fields! See API documentation",
             "code": 0
@@ -266,6 +277,13 @@ export async function UpdateRestaurant(req, res){
     if(phone.toString().length !== 9){
         return res.status(400).json({
             "message": "The Phone Number is invalid!",
+            "code": 1
+        });
+    }
+
+    if(isNaN(stars) || parseInt(stars) > 5 || parseInt(stars) < 0){
+        return res.status(400).json({
+            "message": "Rating need to have a number between 0 and 5.",
             "code": 1
         });
     }
@@ -302,6 +320,7 @@ export async function UpdateRestaurant(req, res){
         closedTime: closingTimeDate,
         latitude,
         longitude,
+        stars,
         restDays
     });
 

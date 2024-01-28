@@ -16,7 +16,8 @@ export default function CartOverview(props){
 
     const [formEndCart, setFormEndCart] = useState({
         paymethod: "MBWay",
-        address: "default"
+        address: "default",
+        observations: ""
     });
 
     async function loadItem(itemId){
@@ -24,7 +25,7 @@ export default function CartOverview(props){
             const food = (await api.get('/food/' + itemId)).data;
             return food;
         }catch(err){
-
+            showNotification("An error occurred getting food data!", 0);
         }
     }
 
@@ -95,7 +96,8 @@ export default function CartOverview(props){
             api.get('/cartMetadata/' + cartId).then(async (cartData) => {
                 setFormEndCart({
                     paymethod: cartData.data.paymentMethod,
-                    address: cartData.data.deliveryAddress
+                    address: cartData.data.deliveryAddress,
+                    observations: cartData.data.observations
                 });
             });
         }
@@ -118,7 +120,7 @@ export default function CartOverview(props){
                 api.put('/updateCart/' + localStorage.getItem("@justeat/isEditing"), {
                     paymethod: formEndCart.paymethod,
                     address: formEndCart.address,
-                    observations: 'N/A',
+                    observations: formEndCart.observations,
                     foods: simpleFoodList,
                 }).then((respCart) => {
                     setCartStep(2);
@@ -135,7 +137,7 @@ export default function CartOverview(props){
                 api.post('/createCart', {
                     paymethod: formEndCart.paymethod,
                     address: formEndCart.address,
-                    observations: 'N/A',
+                    observations: formEndCart.observations,
                     foods: simpleFoodList,
                     restaurantId: localItemsUser[0].food.restaurant
                 }).then((respCart) => {
@@ -176,7 +178,7 @@ export default function CartOverview(props){
                 <p className="text-zinc-700 mb-1">Total: <strong>{calculatePriceToPay().toFixed(2).replace(".", ",")} €</strong></p>
                 <form className="mt-4 flex flex-col space-y-4" onSubmit={submitCart}>
                     <div className="flex flex-col">
-                        <p>Address: </p>
+                        <p>Address:</p>
                         <select className="bg-zinc-100 p-1 mt-0.5 rounded outline-none" name="address" value={formEndCart.address} onChange={handleChangeForm}>
                             <option value="default">--- Select an address ---</option>
                             { addressesList.map((address) => {
@@ -187,11 +189,15 @@ export default function CartOverview(props){
                         </select>
                     </div>
                     <div className="flex flex-col">
-                        <p>Payment Method: </p>
+                        <p>Payment Method:</p>
                         <select className="bg-zinc-100 p-1 mt-0.5 rounded outline-none" name="paymethod" value={formEndCart.paymethod} onChange={handleChangeForm}>
                             <option value="MBWay">MBWay</option>
                             <option value="Google Pay">Google Pay</option>
                         </select>
+                    </div>
+                    <div className="flex flex-col">
+                        <p>Observations:</p>
+                        <textarea className="bg-zinc-100 h-24 p-1 mt-0.5 rounded outline-none" name="observations" value={formEndCart.observations} onChange={handleChangeForm} />
                     </div>
                     <button title="Bring Me My Food" type="submit" className="bg-[#8C52FF] hover:bg-[#7e48e8] rounded hover:cursor-pointer p-3 text-white w-full font-poppins font-normal">Bring Me My Food</button>
                 </form>

@@ -21,12 +21,14 @@ import { UserProvider } from "./Contexts/User";
 import { UtilsProvider } from "./Contexts/Utils";
 
 import Notification from "./Components/Notification";
+import Loading from "./Components/Loading";
 import CheckRole from "./Middlewares/CheckRole";
 
 export default function Router(){
     return (
         <BrowserRouter>
             <UtilsProvider>
+                <Loading />
                 <UserProvider>
                     <Routes>
                         <Route path="/" element={<Home />} />
@@ -36,9 +38,9 @@ export default function Router(){
                         <Route path="/help" element={<Help />} />
 
                         <Route path="/profile" element={<CheckRole roles={["restaurant", "admin", "user"]}><Profile /></CheckRole>} />
-                        <Route path="/address/:addressId" element={<CheckRole roles={["restaurant"]}><AddressDetail /></CheckRole>} />
-                        <Route path="/orders" element={<CheckRole roles={["restaurant"]}><Orders /></CheckRole>} />
-                        <Route path="/addresses" element={<CheckRole roles={["restaurant"]}><Addresses /></CheckRole>} />
+                        <Route path="/address/:addressId" element={<CheckRole roles={["user"]}><AddressDetail /></CheckRole>} />
+                        <Route path="/orders" element={<CheckRole roles={["user"]}><Orders /></CheckRole>} />
+                        <Route path="/addresses" element={<CheckRole roles={["user"]}><Addresses /></CheckRole>} />
 
                         <Route path="/restaurant/:slug" element={<CheckRole roles={["restaurant", "admin", "user"]}><Restaurant /></CheckRole>} />
                         <Route path="/restaurant/overview" element={<CheckRole roles={["restaurant"]}><RestaurantDetail isOwn={true} /></CheckRole>} />
