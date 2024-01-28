@@ -35,7 +35,7 @@ export default function Header(props){
             { isMobileMenuOpen ?
             <div className="w-1/2 h-full bg-zinc-200 border shadow fixed top-0 left-0 p-4 lg:hidden z-10">
                 <div className="flex items-center justify-between">
-                    <img src="/logo.svg" title="JustEat" alt="JustEat" className="w-32" onClick={()=>{navigate('/')}}/>
+                    <img src="/logo.svg" title="JustEat" alt="JustEat" className="w-32" onClick={()=>{ window.location.reload(); }}/>
                     <div className="hover:cursor-pointer" onClick={() => { setIsMobileMenuOpen(false); }}>
                         <IoMdClose className="w-8 h-8 text-zinc-700" />
                     </div>
@@ -124,7 +124,7 @@ export default function Header(props){
                             <p>{getUserSmallName(user.nome)}</p>
                             <div className="flex flex-col relative items-end">
                                 <IoMdArrowDropdown className="w-8 h-8 text-zinc-700" />
-                                { showProfileMenu ? <div className="shadow absolute mt-10 space-y-1 border flex flex-col rounded w-48 bg-white">
+                                { showProfileMenu ? <div className="shadow absolute mt-10 space-y-1 border flex flex-col rounded w-48 bg-white" onClick={() => { navigate('/profile'); }}>
                                     <button className="flex items-center space-x-1 p-2 hover:bg-slate-100">
                                         <MdAccountCircle className="w-6 h-6 text-zinc-700" />
                                         <p>Perfil</p>

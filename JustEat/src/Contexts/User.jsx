@@ -32,7 +32,7 @@ export const UserProvider = ({ children }) => {
     function makeLogout(){
         setUserInfo({});
         localStorage.removeItem("@justeat/auth");
-        navigate("/");
+        window.location.href = "/";
     }
 
     return (
@@ -41,7 +41,8 @@ export const UserProvider = ({ children }) => {
             getUserInfo,
             makeLogout,
             setUserCart,
-            userCart
+            userCart,
+            setUserInfo
         }}>
             { children }
         </UsersContext.Provider>

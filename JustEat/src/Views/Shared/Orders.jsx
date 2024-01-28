@@ -18,14 +18,24 @@ export default function Orders(){
     
     useEffect(() => {
         getUserInfo();
+    }, []);
 
+    useEffect(() => {
         async function loadCarts(){
-            const cartData = await api.get('/GetAllCartFromUser');
-            setCarts(cartData.data);
+            if(user.role === "user"){
+                const cartData = await api.get('/GetAllCartFromUser');
+                setCarts(cartData.data);
+            }else if(user.role === "manager"){
+                const cartData = await api.get('/GetAllCartFromRestaurant');
+                setCarts(cartData.data);
+            }else if(user.role === "admin"){
+                const cartData = await api.get('/GetAllCarts');
+                setCarts(cartData.data);
+            }
         }
 
         loadCarts();
-    }, []);
+    }, [user]);
 
     async function approveCart(cartId){
         const newState = carts.map(obj => {

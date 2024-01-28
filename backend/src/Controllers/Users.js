@@ -3,6 +3,8 @@ import Users from "../Models/Users";
 import bcrypt from "bcryptjs";
 import { validateEmail } from "../Utils/Functions";
 import Restaurants from "../Models/Restaurants";
+import axios from "axios";
+import bcrypt from "bcryptjs";
 
 export function AuthenticateUser(req, res){
     const userId = req.userId;
@@ -187,4 +189,211 @@ export async function UpdatePermissions(req, res){
     res.status(200).json({
         "message": "Permissions updated successfully!"
     });
+}
+
+export async function RecoverAccount(req, res){
+    const email = req.body.email;
+    
+    if(!email){
+        return res.status(400).json({
+            "message": "Missing fields! See API documentation",
+            "code": 0
+        });
+    }
+
+    await Users.findOne({
+        email: email
+    }).then(async (findUser) => {
+        const code = Math.floor(100000 + Math.random() * 900000);
+        await Users.updateOne({
+            _id: findUser._id
+        }, {
+            recoverCode: code
+        });
+
+        axios.post("https://api.twilio.com/2010-04-01/Accounts/AC64c7baa8dfeb7af39ef3e37e34b17e33/Messages.json?To", new URLSearchParams({
+            To: "+351" + findUser.phone,
+            From: 'JustEat',
+            Body: "Your recovery code for your account is " + code
+          }), {
+            auth: {
+                username: process.env.TWILIO_USER,
+                password: process.env.TWILIO_PASS
+            },
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        });
+
+        res.status(200).json({
+            "message": "An SMS was sent to your phone!",
+            "code": 2
+        });
+    }).catch(() => {
+        res.status(404).json({
+            "message": "User not found!",
+            "code": 0
+        });
+    })
+}
+
+export async function ResetPassword(req, res){
+    const otpCode = req.body.otp;
+    const email = req.body.email;
+    const password = req.body.password;
+
+    if(!otpCode || !password || !email){
+        return res.status(400).json({
+            "message": "Missing fields! See API documentation.",
+            "code": 0
+        });
+    }
+
+    if(password.length < 8){
+        res.status(400).json({
+            "message": "The password must be at least 8 characters!",
+            "code": 1
+        });
+    }
+
+    if(otpCode.length !== 6){
+        res.status(400).json({
+            "message": "The OTP Code must have 6 digits!",
+            "code": 1
+        });
+    }
+
+    if(!validateEmail(email)){
+        return res.status(400).json({
+            "field": "email",
+            "code": 1
+        });
+    }
+
+    Users.findOne({ email }, { recoverCode: true }).then(async(userData) => {
+        if(userData.recoverCode !== otpCode){
+            return res.status(401).json({
+                "message": "The OTP Code is invalid!",
+                "code": 0
+            });
+        }else{
+            Users.findOneAndUpdate({ email }, {
+                password: await bcrypt.hash(password, 12),
+                recoverCode: '0'
+            }).then(() => {
+                res.status(200).json({
+                    "message": "Password reset with success!",
+                    "code": 2
+                });
+            }).catch(() => {
+                res.status(404).json({
+                    "message": "User not found!",
+                    "code": 1
+                });
+            })
+        }
+    });
+}
+
+export async function GetAllUserInfo(req, res){
+    const userId = req.userId;
+
+    const userData = await Users.findById(userId, {
+        email: true,
+        nif: true,
+        phone: true,
+        nome: true,
+        photo: true
+    });
+
+    res.status(200).json(userData);
+}
+
+export async function UpdateProfile(req, res){
+    const userId = req.userId;
+
+    const name = req.body.nome;
+    const email = req.body.email;
+    const phone = req.body.phone;
+    const vat = req.body.nif;
+
+    if(!name || !email || !phone || !vat){
+        return res.status(400).json({
+            "message": "Missing fields! See API documentation",
+            "code": 0
+        });
+    }
+
+    if(!validateEmail(email)){
+        return res.status(400).json({
+            "message": "The email is not valid!",
+            "code": 1
+        });
+    }
+
+    if(name.length < 3){
+        return res.status(400).json({
+            "message": "The name needs to be at least 3 characters!",
+            "code": 1
+        });
+    }
+
+    if(phone.length < 9){
+        return res.status(400).json({
+            "message": "The phone needs to be at least 9 characters!",
+            "code": 1
+        });
+    }
+
+    if(vat.length < 9){
+        return res.status(400).json({
+            "message": "The VAT needs to be at least 9 characters!",
+            "code": 1
+        });
+    }
+
+    const checkPreexisting = await Users.findOne({
+        email
+    }, {
+        _id: true
+    });
+
+    if(checkPreexisting && userId !== checkPreexisting._id.toString()){
+        return res.status(400).json({
+            "message": "The email already exists!",
+            "code": 1
+        });
+    }
+
+    await Users.findByIdAndUpdate(userId, {
+        nome: name,
+        email,
+        phone,
+        nif: vat
+    });
+
+    res.status(200).json({
+        "message": "User updated successfully!",
+        "code": 2
+    });
+}
+
+export async function UploadProfileImage(req, res){
+    try {
+        await Users.updateOne({
+            _id: req.userId
+        }, {
+            photo: req.fileName
+        })
+        res.status(200).json({
+            "message": "Profile image updated!",
+            "code": 2,
+            "fileName": req.fileName
+        });
+    }catch(e){
+        res.status(400).json({
+            "message": "Profile image not found!",
+            "code": 1
+        });
+    }
 }

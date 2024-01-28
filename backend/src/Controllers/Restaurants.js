@@ -347,7 +347,7 @@ export async function UploadRestaurantImage(req, res){
         })
         res.status(200).json({
             "message": "Restaurant image updated!",
-            "code": 1,
+            "code": 2,
             "fileName": req.fileName
         });
     }catch(e){

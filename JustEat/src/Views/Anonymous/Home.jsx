@@ -105,7 +105,7 @@ export default function Home(){
                                     { fieldTypePassword === "password" ? <FaRegEye className="w-6 h-6 text-zinc-600" /> : <FaRegEyeSlash className="w-6 h-6 text-zinc-600" /> }
                                 </div>
                             </div>
-                            <Link to="/forgot-password" className="text-[#8C52FF] font-bold hover:underline font-poppins w-fit">Recover Account</Link>
+                            <Link to="/recover" className="text-[#8C52FF] font-bold hover:underline font-poppins w-fit">Recover Account</Link>
                             <button type="submit" className="bg-[#8C52FF] p-3 rounded-lg shadow-xl text-white font-semibold font-poppins hover:bg-[#7e48e8]">Sign In</button>
                         </form>
                         <div className="mt-4 flex items-center space-x-2">

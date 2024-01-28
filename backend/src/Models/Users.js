@@ -43,6 +43,9 @@ const UsersSchema = new Schema({
     entityConnected: {
         type: 'string',
         ref: "Restaurants"
+    },
+    recoverCode: {
+        type: 'string'
     }
 },
     { timestamps: true }

@@ -231,3 +231,125 @@ export async function UpdateCart(req, res){
         "code": 2
     });
 }
+
+export async function GetAllCartFromRestaurant(req, res) {
+    try {
+        const connectedUser = await Users.findById(req.userId, {
+            entityConnected: true
+        });
+
+        const cartData = await Cart.find({
+            restaurantId: connectedUser.entityConnected
+        });
+
+        const cartListData = await Promise.all(cartData.map(async (cartInfo) => {
+            const restaurantData = await Restaurants.findById(cartInfo.restaurantId, {
+                name: true
+            });
+
+            const cartItemsList = await CartItems.find({
+                cartId: cartInfo._id
+            }, {
+                productId: true,
+                observations: true
+            });
+
+            const allItems = await Promise.all(cartItemsList.map(async (itemsList) => {
+                const productInfo = await Food.findById(itemsList.productId, {
+                    name: true
+                });
+
+                const updatedItemsList = {
+                    ...itemsList.toObject(),
+                    productInfo
+                };
+
+                return updatedItemsList;
+            }));
+
+            const addressData = await Addresses.findById(cartInfo.deliveryAddress, {
+                addressLineOne: true,
+                addressLineTwo: true
+            });
+            
+            const usersData = await Users.findById(cartInfo.clientId, {
+                nome: true
+            });
+
+            const updatedCartInfo = {
+                ...cartInfo.toObject(),
+                name: restaurantData.name,
+                id: restaurantData._id,
+                addressData,
+                usersData,
+                allItems
+            };
+
+            return updatedCartInfo;
+        }));
+
+        res.status(200).json(cartListData);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+
+export async function GetAllCarts(req, res) {
+    try {
+
+        const cartData = await Cart.find();
+
+        const cartListData = await Promise.all(cartData.map(async (cartInfo) => {
+            const restaurantData = await Restaurants.findById(cartInfo.restaurantId, {
+                name: true
+            });
+
+            const cartItemsList = await CartItems.find({
+                cartId: cartInfo._id
+            }, {
+                productId: true,
+                observations: true
+            });
+
+            const allItems = await Promise.all(cartItemsList.map(async (itemsList) => {
+                const productInfo = await Food.findById(itemsList.productId, {
+                    name: true
+                });
+
+                const updatedItemsList = {
+                    ...itemsList.toObject(),
+                    productInfo
+                };
+
+                return updatedItemsList;
+            }));
+
+            const addressData = await Addresses.findById(cartInfo.deliveryAddress, {
+                addressLineOne: true,
+                addressLineTwo: true
+            });
+            
+            const usersData = await Users.findById(cartInfo.clientId, {
+                nome: true
+            });
+
+            const updatedCartInfo = {
+                ...cartInfo.toObject(),
+                name: restaurantData.name,
+                id: restaurantData._id,
+                addressData,
+                usersData,
+                allItems
+            };
+
+            return updatedCartInfo;
+        }));
+
+        res.status(200).json(cartListData);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}

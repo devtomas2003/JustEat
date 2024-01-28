@@ -8,15 +8,17 @@ import RestaurantDetail from "./Views/Shared/RestaurantDetail";
 import Orders from "./Views/Shared/Orders";
 import ListPermissions from "./Views/Admin/Permissions";
 import Addresses from "./Views/User/Addresses";
+import AddressDetail from "./Views/User/AddressesDetail";
+import PermissionDetail from "./Views/Admin/PermissionDetail";
+import Foods from "./Views/Restaurant/Foods";
+import FoodDetail from "./Views/Restaurant/FoodDetails";
+import RecoverAccount from "./Views/Anonymous/Recover";
+import Profile from "./Views/Shared/Profile";
 
 import { UserProvider } from "./Contexts/User";
 import { UtilsProvider } from "./Contexts/Utils";
 
 import Notification from "./Components/Notification";
-import AddressDetail from "./Views/User/AddressesDetail";
-import PermissionDetail from "./Views/Admin/PermissionDetail";
-import Foods from "./Views/Restaurant/Foods";
-import FoodDetail from "./Views/Restaurant/FoodDetails";
 
 export default function Router(){
     return (
@@ -41,6 +43,8 @@ export default function Router(){
                         <Route path="/admin/permission/:userId" element={<PermissionDetail />} />
                         <Route path="/foods" element={<Foods />} />
                         <Route path="/food/:foodId" element={<FoodDetail />} />
+                        <Route path="/recover" element={<RecoverAccount />} />
+                        <Route path="/profile" element={<Profile />} />
                     </Routes>
                     <Notification />
                 </UserProvider>
