@@ -12,7 +12,6 @@ export default function CheckRole(props) {
     }, []);
 
     useEffect(() => {
-        console.log(props);
         if(!props.roles.includes(user.role)){
             navigate("/");
         }else{

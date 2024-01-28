@@ -37,16 +37,16 @@ export default function Router(){
                         <Route path="/policys" element={<Legal />} />
                         <Route path="/help" element={<Help />} />
 
-                        <Route path="/profile" element={<CheckRole roles={["restaurant", "admin", "user"]}><Profile /></CheckRole>} />
+                        <Route path="/profile" element={<CheckRole roles={["manager", "admin", "user"]}><Profile /></CheckRole>} />
                         <Route path="/address/:addressId" element={<CheckRole roles={["user"]}><AddressDetail /></CheckRole>} />
                         <Route path="/orders" element={<CheckRole roles={["user"]}><Orders /></CheckRole>} />
                         <Route path="/addresses" element={<CheckRole roles={["user"]}><Addresses /></CheckRole>} />
 
-                        <Route path="/restaurant/:slug" element={<CheckRole roles={["restaurant", "admin", "user"]}><Restaurant /></CheckRole>} />
-                        <Route path="/restaurant/overview" element={<CheckRole roles={["restaurant"]}><RestaurantDetail isOwn={true} /></CheckRole>} />
-                        <Route path="/restaurant/orders" element={<CheckRole roles={["restaurant"]}><Orders /></CheckRole>} />
-                        <Route path="/restaurant/foods" element={<CheckRole roles={["restaurant"]}><Foods /></CheckRole>} />
-                        <Route path="/restaurant/food/:foodId" element={<CheckRole roles={["restaurant"]}><FoodDetail /></CheckRole>} />
+                        <Route path="/restaurant/:slug" element={<CheckRole roles={["manager", "admin", "user"]}><Restaurant /></CheckRole>} />
+                        <Route path="/restaurant/overview" element={<CheckRole roles={["manager"]}><RestaurantDetail isOwn={true} /></CheckRole>} />
+                        <Route path="/restaurant/orders" element={<CheckRole roles={["manager"]}><Orders /></CheckRole>} />
+                        <Route path="/restaurant/foods" element={<CheckRole roles={["manager"]}><Foods /></CheckRole>} />
+                        <Route path="/restaurant/food/:foodId" element={<CheckRole roles={["manager"]}><FoodDetail /></CheckRole>} />
 
                         <Route path="/admin/restaurants" element={<CheckRole roles={["admin"]}><ListRestaurants /></CheckRole>} />
                         <Route path="/admin/restaurant/:slug" element={<CheckRole roles={["admin"]}><RestaurantDetail /></CheckRole>} />

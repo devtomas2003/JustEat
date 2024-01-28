@@ -120,7 +120,6 @@ export async function GetAllCartFromUser(req, res) {
 
         res.status(200).json(cartListData);
     } catch (error) {
-        console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
@@ -291,7 +290,6 @@ export async function GetAllCartFromRestaurant(req, res) {
 
         res.status(200).json(cartListData);
     } catch (error) {
-        console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
@@ -350,7 +348,6 @@ export async function GetAllCarts(req, res) {
 
         res.status(200).json(cartListData);
     } catch (error) {
-        console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
