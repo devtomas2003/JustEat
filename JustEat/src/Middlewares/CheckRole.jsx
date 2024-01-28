@@ -22,7 +22,7 @@ export default function CheckRole(props) {
 
     return (
         <Fragment>
-            {isAuthorized ? props.children : null }
+            { isAuthorized ? props.children : null }
         </Fragment>
     );
 }

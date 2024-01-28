@@ -211,7 +211,7 @@ export async function RecoverAccount(req, res){
             recoverCode: code
         });
 
-        axios.post("https://api.twilio.com/2010-04-01/Accounts/AC64c7baa8dfeb7af39ef3e37e34b17e33/Messages.json?To", new URLSearchParams({
+        axios.post("https://api.twilio.com/2010-04-01/Accounts/AC64c7baa8dfeb7af39ef3e37e34b17e33/Messages.json", new URLSearchParams({
             To: "+351" + findUser.phone,
             From: 'JustEat',
             Body: "Your recovery code for your account is " + code
