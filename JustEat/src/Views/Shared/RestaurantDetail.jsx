@@ -28,7 +28,7 @@ const submitRestaurantForm = z.object({
 
 export default function RestaurantDetail(props){
 
-    const { getUserInfo } = useUser();
+    const { getUserInfo, user } = useUser();
     const { showNotification } = useUtils();
     let { slug } = useParams();
     const navigate = useNavigate();
@@ -46,7 +46,7 @@ export default function RestaurantDetail(props){
         if(selectedRestDays.length === 7){
             showNotification("The Restaurant need to be opened at least 1 day!", 1);
         }else{
-            if(slug || props.isOwn){
+            if(slug !== "new" || props.isOwn){
                 const path = props.isOwn ? "own" : slug;
                 api.put('/updateRestaurant/' + path, {
                     name: restaurantData.name,
@@ -93,7 +93,7 @@ export default function RestaurantDetail(props){
         getUserInfo();
 
         async function loadRestaurant(){
-            if(slug){
+            if(!props.isOwn){
                 api.get('/restaurantOverview?editedEntity=' + slug).then((restaurantData) => {
                     const restData = restaurantData.data;
                     loadData(restData);
@@ -105,7 +105,7 @@ export default function RestaurantDetail(props){
                 });
             }
         }
-        if(props.isOwn || slug){
+        if(props.isOwn || slug !== "new"){
             loadRestaurant();
         }
     }, []);
@@ -276,7 +276,7 @@ export default function RestaurantDetail(props){
                                 </div>
                             </div>
                             <div className="w-full flex justify-end mt-4 space-x-2">
-                                { slug ? <button className="p-2 rounded bg-red-600 hover:bg-red-700 flex items-center space-x-1" type="button" onClick={() => { deleteRestaurant(); }}>
+                                { slug !== "new" && user.role === "admin" ? <button className="p-2 rounded bg-red-600 hover:bg-red-700 flex items-center space-x-1" type="button" onClick={() => { deleteRestaurant(); }}>
                                     <MdDelete className="w-6 h-6 text-white" />
                                     <p className="font-poppins text-white font-semibold">Delete</p>
                                 </button> : null }
@@ -288,7 +288,7 @@ export default function RestaurantDetail(props){
                         </form>
                         <h1 className="text-zinc-800 font-poppins text-lg">Profile Photo</h1>
                         <img src={IMAGES_SERVER + restaurantMetadata.photo} className="h-40 mt-2 rounded" title={restaurantMetadata.name} alt={restaurantMetadata.name} />
-                        { slug || props.isOwn ?
+                        { slug !== "new" || props.isOwn ?
                         <Fragment>
                             <input
                                 type="file"

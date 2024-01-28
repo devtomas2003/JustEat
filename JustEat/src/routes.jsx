@@ -43,7 +43,6 @@ export default function Router(){
 
                         <Route path="/admin/restaurants" element={<ListRestaurants />} />
                         <Route path="/admin/restaurant/:slug" element={<RestaurantDetail />} />
-                        <Route path="/admin/restaurant/new" element={<RestaurantDetail />} />
                         <Route path="/admin/orders" element={<Orders />} />
                         <Route path="/admin/permissions" element={<ListPermissions />} />
                         <Route path="/admin/permission/:userId" element={<PermissionDetail />} />
