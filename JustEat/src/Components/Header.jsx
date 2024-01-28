@@ -52,11 +52,11 @@ export default function Header(props){
                             <>
                                 <li><Link to="/restaurant/orders" className="hover:underline">My Requests</Link></li>
                                 <li><Link to="/restaurant/overview" className="hover:underline">My Restaurant</Link></li>
-                                <li><Link to="/foods" className="hover:underline">Foods</Link></li>
+                                <li><Link to="/restaurant/foods" className="hover:underline">Foods</Link></li>
                             </> : user.role === "admin" ?
                             <>
                                 <li><Link to="/admin/restaurants" className="hover:underline">Restaurants</Link></li>
-                                <li><Link to="/restaurant/orders" className="hover:underline">Requests</Link></li>
+                                <li><Link to="/admin/orders" className="hover:underline">Requests</Link></li>
                                 <li><Link to="/admin/permissions" className="hover:underline">Permissions</Link></li>
                             </> : null }
                         </> :

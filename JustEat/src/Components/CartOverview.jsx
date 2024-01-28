@@ -4,6 +4,7 @@ import { Fragment, useEffect, useState } from "react";
 import api from "../services/api";
 import { useUser } from "../Contexts/User";
 import { useUtils } from "../Contexts/Utils";
+import { useNavigate } from "react-router-dom";
 
 export default function CartOverview(props){
     const { showNotification } = useUtils();
@@ -11,6 +12,8 @@ export default function CartOverview(props){
     const [localItemsUser, setLocalItemsUser] = useState([]);
     const [addressesList, setAddressesList] = useState([]);
     const [cartStep, setCartStep] = useState(0);
+    const navigate = useNavigate();
+
     const [formEndCart, setFormEndCart] = useState({
         paymethod: "MBWay",
         address: "default"
@@ -124,6 +127,7 @@ export default function CartOverview(props){
                     localStorage.removeItem("@justeat/isEditing");
                     localStorage.removeItem("@justeat/userId");
                     setUserCart([]);
+                    navigate("/admin/orders");
                 }).catch((err) => {
                     showNotification(err.reponse.data.message, err.reponse.data.code);
                 });

@@ -28,23 +28,25 @@ export default function Router(){
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/signup" element={<SignUp />} />
+                        <Route path="/recover" element={<RecoverAccount />} />
+
+                        <Route path="/profile" element={<Profile />} />
+                        <Route path="/address/:addressId" element={<AddressDetail />} />
+                        <Route path="/orders" element={<Orders />} />
+                        <Route path="/addresses" element={<Addresses />} />
+
                         <Route path="/restaurant/:slug" element={<Restaurant />} />
+                        <Route path="/restaurant/overview" element={<RestaurantDetail isOwn={true} />} />
+                        <Route path="/restaurant/orders" element={<Orders />} />
+                        <Route path="/restaurant/foods" element={<Foods />} />
+                        <Route path="/food/:foodId" element={<FoodDetail />} />
+
                         <Route path="/admin/restaurants" element={<ListRestaurants />} />
                         <Route path="/admin/restaurant/:slug" element={<RestaurantDetail />} />
                         <Route path="/admin/restaurant/new" element={<RestaurantDetail />} />
                         <Route path="/admin/orders" element={<Orders />} />
-                        <Route path="/restaurant/overview" element={<RestaurantDetail isOwn={true} />} />
-                        <Route path="/orders" element={<Orders />} />
-                        <Route path="/addresses" element={<Addresses />} />
-                        <Route path="/admin/orders" element={<Orders />} />
-                        <Route path="/restaurant/orders" element={<Orders />} />
-                        <Route path="/address/:addressId" element={<AddressDetail />} />
                         <Route path="/admin/permissions" element={<ListPermissions />} />
                         <Route path="/admin/permission/:userId" element={<PermissionDetail />} />
-                        <Route path="/foods" element={<Foods />} />
-                        <Route path="/food/:foodId" element={<FoodDetail />} />
-                        <Route path="/recover" element={<RecoverAccount />} />
-                        <Route path="/profile" element={<Profile />} />
                     </Routes>
                     <Notification />
                 </UserProvider>
