@@ -84,7 +84,7 @@ export async function CreateAccount(req, res){
 
     const checkPreexisting = await Users.findOne({
         email
-    });
+    })
 
     if(checkPreexisting){
         return res.status(400).json({
@@ -101,7 +101,8 @@ export async function CreateAccount(req, res){
         phone,
         nif: vat,
         photo: 'default.png',
-        password: passwordEnc
+        password: passwordEnc,
+        isActive: true
     });
 
     res.status(200).json({
